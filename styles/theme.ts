@@ -47,8 +47,9 @@ const textStyle = {
   }),
   variants: {
     helper: (props: StyleFunctionProps) => ({
-      color: mode("gray.500", "white")(props),
+      color: mode("gray.500", "gray.500")(props),
       fontSize: "sm",
+      fontWeight: "semibold",
     }),
   },
 };
@@ -77,7 +78,7 @@ const components = {
 
 /**Custom Fonts */
 const fonts = {
-  heading: "Source Sans Pro, sans-serif",
+  heading: "K2D, Source Sans Pro, sans-serif",
   body: "Open Sans, sans-serif",
 };
 
