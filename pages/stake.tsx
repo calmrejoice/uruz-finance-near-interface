@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import { StakeCard } from "@components/StakePage/StakeCard";
 
 const StakePage: NextPage = () => {
   return (
-    <Flex m="auto" flexDir="column">
-      <Text>im stake page</Text>
+    <Flex flexDir="column" alignItems="center">
+      <StakeCard />
     </Flex>
   );
 };

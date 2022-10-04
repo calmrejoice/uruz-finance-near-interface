@@ -12,7 +12,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
       <Head>
-        <title>My Next JS App</title>
+        <title>Uruz Finance</title>
         <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
