@@ -1,6 +1,6 @@
 import { Flex, Text, useColorMode } from "@chakra-ui/react";
 
-export const Card = ({ children }: any) => {
+export const Card = ({ children, ...props }: any) => {
   const { colorMode } = useColorMode();
 
   return (
@@ -11,6 +11,7 @@ export const Card = ({ children }: any) => {
       shadow="xl"
       m="6"
       bgColor={colorMode === "dark" ? "gray.900" : "none"}
+      {...props}
     >
       {children}
     </Flex>

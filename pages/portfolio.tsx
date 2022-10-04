@@ -1,10 +1,11 @@
 import type { NextPage } from "next";
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex } from "@chakra-ui/react";
+import { MyAccountCard } from "@components/PortfolioPage/MyAccountCard";
 
 const PortfolioPage: NextPage = () => {
   return (
-    <Flex m="auto" flexDir="column">
-      <Text>im portfolio page</Text>
+    <Flex flexDir="column" alignItems="center">
+      <MyAccountCard />
     </Flex>
   );
 };
