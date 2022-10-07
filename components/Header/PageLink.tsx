@@ -7,6 +7,8 @@ export const PageLink = ({ routeName, pageName }: any) => {
   const router = useRouter();
   const { pathname } = router;
 
+  const path = "/" + pathname.split("/")[1];
+
   return (
     <Flex flexDir="column" position="relative" alignItems="center">
       <Button
@@ -16,7 +18,7 @@ export const PageLink = ({ routeName, pageName }: any) => {
         {pageName}
       </Button>
 
-      {routeName === pathname && (
+      {routeName === path && (
         <Box
           bgColor={BRAND_HOVER_COLOR}
           width="30%"
