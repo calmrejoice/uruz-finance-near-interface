@@ -15,6 +15,7 @@
     "@fontsource/k2d": "^4.5.10",
     "@fontsource/open-sans": "^4.5.11",
     "@fontsource/source-sans-pro": "^4.5.11",
+    "date-fns": "^2.29.3",
     "framer-motion": "^6.5.1",
     "next": "12.3.1",
     "react": "18.2.0",

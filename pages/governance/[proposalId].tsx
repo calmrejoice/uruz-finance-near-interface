@@ -1,9 +1,12 @@
-import type { NextPage } from "next";
-import { Flex } from "@chakra-ui/react";
-
-import { useRouter } from "next/router";
-import { IProposal, mockProposals } from "@constants/mockProposals";
 import { useEffect, useState } from "react";
+import type { NextPage } from "next";
+import { Flex, Heading, Text } from "@chakra-ui/react";
+import { useRouter } from "next/router";
+
+import { IProposal, mockProposals } from "@constants/mockProposals";
+import { Card } from "@components/Shared/Card";
+import { ProposalHistoryCard } from "@components/ProposalDetailsPage/ProposalHistoryCard";
+import { ProposalVotesCard } from "@components/ProposalDetailsPage/ProposalVotesCard";
 
 const ProposalDetailsPage: NextPage = () => {
   const router = useRouter();
@@ -20,12 +23,19 @@ const ProposalDetailsPage: NextPage = () => {
     }
   }, [proposalId]);
 
-  console.log(proposal);
-
   return (
-    <Flex mx="32" flexDir="row">
-      {proposalId}
-      {proposal?.description?.title}
+    <Flex mx="32" flexDir="column">
+      <Flex flexDir="row">
+        <ProposalVotesCard proposal={proposal} />
+        <ProposalHistoryCard proposal={proposal} />
+      </Flex>
+
+      <Card flexDir="column">
+        <Heading fontSize="lg" mb="6">
+          Description
+        </Heading>
+        <Text>{proposal?.description?.description}</Text>
+      </Card>
     </Flex>
   );
 };

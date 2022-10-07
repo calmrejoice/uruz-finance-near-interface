@@ -25,12 +25,12 @@ export interface Description {
 
 export interface IProposal {
   againstVotesWei: string;
-  createdDate: Date | undefined;
-  executedDate: Date | undefined;
-  queuedDate: Date | undefined;
-  startDate: Date | undefined;
-  endDate: Date | undefined;
-  cancelDate: Date | undefined;
+  createdDate: Date | number | undefined;
+  executedDate: Date | number | undefined;
+  queuedDate: Date | number | undefined;
+  startDate: Date | number | undefined;
+  endDate: Date | number | undefined;
+  cancelDate: Date | number | undefined;
 
   description?: Description;
   forVotesWei?: string;
@@ -43,11 +43,11 @@ export interface IProposal {
 export const mockProposals: IProposal[] = [
   {
     id: 1,
-    createdDate: new Date("1664922671"),
-    queuedDate: new Date("1664922671"),
-    startDate: new Date("1664922671"),
-    endDate: new Date("1664922671"),
-    executedDate: new Date("1664922671"),
+    createdDate: new Date(1664129753 * 1000),
+    startDate: new Date(1664229753 * 1000),
+    endDate: new Date(1664329753 * 1000),
+    queuedDate: new Date(1664429753 * 1000),
+    executedDate: new Date(1664529753 * 1000),
     cancelDate: undefined,
 
     forVotesWei: "886.16K",
@@ -63,11 +63,11 @@ export const mockProposals: IProposal[] = [
 
   {
     id: 2,
-    createdDate: new Date("1664922671"),
-    queuedDate: new Date("1664922671"),
-    startDate: new Date("1664922671"),
-    endDate: new Date("1664922671"),
-    executedDate: new Date("1664922671"),
+    createdDate: new Date(1665129753 * 1000),
+    startDate: new Date(1665229753 * 1000),
+    endDate: new Date(1665329753 * 1000),
+    queuedDate: new Date(1665429753 * 1000),
+    executedDate: new Date(1665529753 * 1000),
     cancelDate: undefined,
 
     forVotesWei: "886.16K",
@@ -83,11 +83,11 @@ export const mockProposals: IProposal[] = [
 
   {
     id: 3,
-    createdDate: new Date("1664922671"),
-    queuedDate: new Date("1664922671"),
-    startDate: new Date("1664922671"),
-    endDate: new Date("1664922671"),
-    executedDate: new Date("1664922671"),
+    createdDate: new Date(1667129753 * 1000),
+    startDate: new Date(1667229753 * 1000),
+    endDate: new Date(1667329753 * 1000),
+    queuedDate: new Date(1667429753 * 1000),
+    executedDate: new Date(1667529753 * 1000),
     cancelDate: undefined,
 
     forVotesWei: "886.16K",
