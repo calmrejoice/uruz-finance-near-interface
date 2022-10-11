@@ -37,7 +37,7 @@ import { TabHeading } from "./TabHeading";
 type SupplyModalProps = {
   isOpen: any;
   onClose: any;
-  pool: IPool;
+  pool: IPool | undefined;
 };
 
 export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
@@ -50,10 +50,10 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
       <ModalContent>
         <ModalHeader>
           <HStack>
-            <Image src={pool.assetImage} boxSize="30px" />
+            <Image src={pool?.assetImage} boxSize="30px" />
             <VStack alignItems="left" spacing="0" fontWeight="bold">
-              <Text fontSize="md">{pool.symbol}</Text>
-              <Text variant="helper">{pool.assetName}</Text>
+              <Text fontSize="md">{pool?.symbol}</Text>
+              <Text variant="helper">{pool?.assetName}</Text>
             </VStack>
           </HStack>
         </ModalHeader>
@@ -65,14 +65,14 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
             <Spacer />
 
             <Text>0.00</Text>
-            <Text>{pool.symbol}</Text>
+            <Text>{pool?.symbol}</Text>
           </HStack>
 
           <HStack my="1">
             <Text variant="helper">Supply APY</Text>
             <Spacer />
 
-            <Badge colorScheme="green">{pool.apy}</Badge>
+            <Badge colorScheme="green">{pool?.apy}</Badge>
           </HStack>
 
           <HStack fontWeight="bold">
@@ -80,7 +80,7 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
             <Spacer />
 
             <Text>363.60M</Text>
-            <Text>{pool.symbol}</Text>
+            <Text>{pool?.symbol}</Text>
           </HStack>
 
           <Box
@@ -119,12 +119,12 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
                     <Text display="inline" fontWeight="bold">
                       0.000
                     </Text>
-                    <Text>{pool.symbol} </Text>
+                    <Text>{pool?.symbol} </Text>
                   </HStack>
                 </FormLabel>
                 <InputGroup>
                   <InputLeftElement>
-                    <Image src={pool.assetImage} boxSize="20px" />
+                    <Image src={pool?.assetImage} boxSize="20px" />
                   </InputLeftElement>
                   <Input
                     type="number"
@@ -157,7 +157,7 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
               </FormControl>
 
               <Button width="100%" my="6">
-                {tab === "supply" ? "Supply" : "Withdraw"} {pool.symbol}
+                {tab === "supply" ? "Supply" : "Withdraw"} {pool?.symbol}
               </Button>
             </Flex>
           </Box>

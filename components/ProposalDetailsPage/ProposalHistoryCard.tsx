@@ -1,9 +1,7 @@
-import { Flex, HStack, Icon, Spacer, Text, VStack } from "@chakra-ui/react";
-import { BsFillCheckCircleFill } from "react-icons/bs";
+import { Text, VStack } from "@chakra-ui/react";
 
 import { Card } from "@components/Shared/Card";
 import { IProposal } from "@constants/mockProposals";
-import { formatDate } from "@utils/formatDate";
 import { ProposalState } from "./ProposalState";
 
 type ProposalHistoryCardProps = {

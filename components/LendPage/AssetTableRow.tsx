@@ -9,9 +9,11 @@ import {
   useDisclosure,
   Badge,
   Button,
+  useColorMode,
 } from "@chakra-ui/react";
 
 import { IPool } from "@constants/mockLendingPools";
+import { useRouter } from "next/router";
 import { BorrowModal } from "./BorrowModal";
 import { SupplyModal } from "./SupplyModal";
 
@@ -32,12 +34,28 @@ export const AssetTableRow = ({ pool }: AssetTableRowProps) => {
     onOpen: onOpenBorrow,
   } = useDisclosure();
 
+  const router = useRouter();
+
+  const { colorMode } = useColorMode();
+
+  const onClickMarketDetails = () => {
+    router.push({
+      pathname: "marketDetails",
+      query: { tokenSymbol: pool.symbol },
+    });
+  };
+
   return (
-    <Tr>
+    <Tr
+      _hover={{
+        bgColor: colorMode === "light" ? "gray.50" : "gray.800",
+        cursor: "pointer",
+      }}
+    >
       <SupplyModal isOpen={isOpenSupply} onClose={onCloseSupply} pool={pool} />
       <BorrowModal isOpen={isOpenBorrow} onClose={onCloseBorrow} pool={pool} />
 
-      <Td>
+      <Td onClick={onClickMarketDetails}>
         <HStack>
           <Image src={pool.assetImage} boxSize="30px" />
           <VStack spacing="0" alignItems="left">
@@ -49,19 +67,25 @@ export const AssetTableRow = ({ pool }: AssetTableRowProps) => {
         </HStack>
       </Td>
 
-      <Td fontWeight="bold">{pool.totalSupply}</Td>
-      <Td fontWeight="bold">
+      <Td onClick={onClickMarketDetails} fontWeight="bold">
+        {pool.totalSupply}
+      </Td>
+      <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="green" fontSize="md">
           {pool.apy}
         </Badge>
       </Td>
-      <Td fontWeight="bold">{pool.totalBorrow}</Td>
-      <Td fontWeight="bold">
+      <Td onClick={onClickMarketDetails} fontWeight="bold">
+        {pool.totalBorrow}
+      </Td>
+      <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="red" fontSize="md">
           {pool.borrowApy}
         </Badge>
       </Td>
-      <Td fontWeight="bold">{pool.availableLending}</Td>
+      <Td onClick={onClickMarketDetails} fontWeight="bold">
+        {pool.availableLending}
+      </Td>
 
       <Td>
         <VStack>

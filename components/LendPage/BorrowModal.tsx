@@ -35,7 +35,7 @@ import { TabHeading } from "./TabHeading";
 type BorrowModalProps = {
   isOpen: any;
   onClose: any;
-  pool: IPool;
+  pool: IPool | undefined;
 };
 
 export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
@@ -49,10 +49,10 @@ export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
       <ModalContent>
         <ModalHeader>
           <HStack>
-            <Image src={pool.assetImage} boxSize="30px" />
+            <Image src={pool?.assetImage} boxSize="30px" />
             <VStack alignItems="left" spacing="0" fontWeight="bold">
-              <Text fontSize="md">{pool.symbol}</Text>
-              <Text variant="helper">{pool.assetName}</Text>
+              <Text fontSize="md">{pool?.symbol}</Text>
+              <Text variant="helper">{pool?.assetName}</Text>
             </VStack>
           </HStack>
         </ModalHeader>
@@ -75,7 +75,7 @@ export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
             <Text variant="helper">Borrow APY</Text>
             <Spacer />
 
-            <Badge colorScheme="red">{pool.borrowApy}</Badge>
+            <Badge colorScheme="red">{pool?.borrowApy}</Badge>
           </HStack>
 
           <HStack fontWeight="bold">
@@ -83,7 +83,7 @@ export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
             <Spacer />
 
             <Text>363.60M</Text>
-            <Text>{pool.symbol}</Text>
+            <Text>{pool?.symbol}</Text>
           </HStack>
 
           <Box
@@ -122,12 +122,12 @@ export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
                     <Text display="inline" fontWeight="bold">
                       0.000
                     </Text>
-                    <Text>{pool.symbol} </Text>
+                    <Text>{pool?.symbol} </Text>
                   </HStack>
                 </FormLabel>
                 <InputGroup>
                   <InputLeftElement>
-                    <Image src={pool.assetImage} boxSize="20px" />
+                    <Image src={pool?.assetImage} boxSize="20px" />
                   </InputLeftElement>
                   <Input
                     type="number"
@@ -161,7 +161,7 @@ export const BorrowModal = ({ isOpen, onClose, pool }: BorrowModalProps) => {
               </FormControl>
 
               <Button width="100%" my="6">
-                {tab === "borrow" ? "Borrow" : "Repay"} {pool.symbol}
+                {tab === "borrow" ? "Borrow" : "Repay"} {pool?.symbol}
               </Button>
             </Flex>
           </Box>
