@@ -1,3 +1,5 @@
+import { BigNumber } from "ethers";
+
 export const address = {
   account: "0xDB033CE019a09dFCBc2f96d66Ba8a40a51F14Bc6",
   ethInterestRate: "0x9d3839EF57C38F41EF0895A13F2C0A9b03661A4E",
@@ -41,5 +43,8 @@ export const config = {
   ],
   utokenDecimals: 8,
   erc20TokenDecimals: 18,
+  unlimitedApprovalAmount: BigNumber.from(
+    "115792089237316195423570985008687907853269984665640564039457584007913129639935"
+  ),
   networkUrl: "https://testnet.aurora.dev",
 };

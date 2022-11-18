@@ -31,14 +31,21 @@ import {
 import { IoCartSharp } from "react-icons/io5";
 import { TabHeading } from "./TabHeading";
 import { IMarket } from "@constants/IMarket";
+import { IMarketDetails } from "@constants/IMarketDetails";
 
 type BorrowModalProps = {
   isOpen: any;
   onClose: any;
   market: IMarket | undefined;
+  marketDetails: IMarketDetails | undefined;
 };
 
-export const BorrowModal = ({ isOpen, onClose, market }: BorrowModalProps) => {
+export const BorrowModal = ({
+  isOpen,
+  onClose,
+  market,
+  marketDetails,
+}: BorrowModalProps) => {
   const [tab, setTab] = useState("borrow");
 
   const { colorMode } = useColorMode();
@@ -75,14 +82,14 @@ export const BorrowModal = ({ isOpen, onClose, market }: BorrowModalProps) => {
             <Text variant="helper">Borrow APY</Text>
             <Spacer />
 
-            <Badge colorScheme="red">market?.borrowApy</Badge>
+            <Badge colorScheme="red">{marketDetails?.borrowApy}</Badge>
           </HStack>
 
           <HStack fontWeight="bold">
             <Text variant="helper">Total lending available</Text>
             <Spacer />
 
-            <Text>363.60M</Text>
+            <Text>{marketDetails?.totalCash}</Text>
             <Text>{market?.collateralSymbol}</Text>
           </HStack>
 

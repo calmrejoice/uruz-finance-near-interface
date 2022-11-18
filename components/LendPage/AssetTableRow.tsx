@@ -25,7 +25,7 @@ type AssetTableRowProps = {
 export const AssetTableRow = ({ market }: AssetTableRowProps) => {
   const { marketDetails } = useMarketDetails(market?.collateralSymbol);
 
-  console.log(marketDetails);
+  // console.log(marketDetails);
 
   const {
     isOpen: isOpenSupply,
@@ -61,11 +61,13 @@ export const AssetTableRow = ({ market }: AssetTableRowProps) => {
         isOpen={isOpenSupply}
         onClose={onCloseSupply}
         market={market}
+        marketDetails={marketDetails}
       />
       <BorrowModal
         isOpen={isOpenBorrow}
         onClose={onCloseBorrow}
         market={market}
+        marketDetails={marketDetails}
       />
 
       <Td onClick={onClickMarketDetails}>
@@ -81,23 +83,23 @@ export const AssetTableRow = ({ market }: AssetTableRowProps) => {
       </Td>
 
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        pool.totalSupply
+        ${marketDetails?.totalSupplyInUsd}
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="green" fontSize="md">
-          pool.apy
+          {marketDetails?.apy}%
         </Badge>
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        pool.totalBorrow
+        ${marketDetails?.totalBorrowedInUsd}
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="red" fontSize="md">
-          pool.borrowApy
+          {marketDetails?.borrowApy}%
         </Badge>
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        pool.availableLending
+        {marketDetails?.totalCash}
       </Td>
 
       <Td>

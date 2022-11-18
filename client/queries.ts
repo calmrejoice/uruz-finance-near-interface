@@ -127,62 +127,54 @@ export const getComptrollerDetails = async (utokenAddress: string) => {
 };
 
 export const getTokenPrice = async (tokenSymbol: string) => {
-  try {
-    const tokenPriceUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tokenSymbol}&tsyms=USD`;
+  const tokenPriceUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tokenSymbol}&tsyms=USD`;
 
-    if (tokenSymbol === "URZ") {
-      return 0.369;
-    } else {
-      const { data }: any = await axios.get(tokenPriceUrl);
+  if (tokenSymbol === "URZ") {
+    return 0.369;
+  } else {
+    const { data }: any = await axios.get(tokenPriceUrl);
 
-      return parseFloat(data?.USD);
-    }
-  } catch (error) {
-    console.log(error);
+    return parseFloat(data?.USD);
   }
 };
 
 export const getInterestRateModel = async (utokenAddress: string) => {
   if (!utokenAddress) return;
-  try {
-    const utokenContract = new ethers.Contract(
-      utokenAddress,
-      delegatorAbi,
-      provider
-    );
-    const reserveFactor = await utokenContract.reserveFactorMantissa();
-    const cash = await utokenContract.getCash();
-    const borrows = await utokenContract.totalBorrows();
-    const reserves = await utokenContract.totalReserves();
-    const interestAddress = await utokenContract.interestRateModel();
+  const utokenContract = new ethers.Contract(
+    utokenAddress,
+    delegatorAbi,
+    provider
+  );
+  const reserveFactor = await utokenContract.reserveFactorMantissa();
+  const cash = await utokenContract.getCash();
+  const borrows = await utokenContract.totalBorrows();
+  const reserves = await utokenContract.totalReserves();
+  const interestAddress = await utokenContract.interestRateModel();
 
-    const interestContract = new ethers.Contract(
-      interestAddress,
-      jumpRateModelAbi,
-      provider
-    );
-    const mulPerBlock = await interestContract.multiplierPerBlock();
-    const basePerBlock = await interestContract.baseRatePerBlock();
-    const jumpPerBlock = await interestContract.jumpMultiplierPerBlock();
-    const kink = await interestContract.kink();
-    const utilizationRate = await interestContract.utilizationRate(
-      cash,
-      borrows,
-      reserves
-    );
+  const interestContract = new ethers.Contract(
+    interestAddress,
+    jumpRateModelAbi,
+    provider
+  );
+  const mulPerBlock = await interestContract.multiplierPerBlock();
+  const basePerBlock = await interestContract.baseRatePerBlock();
+  const jumpPerBlock = await interestContract.jumpMultiplierPerBlock();
+  const kink = await interestContract.kink();
+  const utilizationRate = await interestContract.utilizationRate(
+    cash,
+    borrows,
+    reserves
+  );
 
-    const model = generateInterestModelArray(
-      mulPerBlock,
-      basePerBlock,
-      reserveFactor,
-      jumpPerBlock,
-      kink
-    );
+  const model = generateInterestModelArray(
+    mulPerBlock,
+    basePerBlock,
+    reserveFactor,
+    jumpPerBlock,
+    kink
+  );
 
-    return { model, utilizationRate: formatBalance(utilizationRate, 18) };
-  } catch (error) {
-    console.log(error, "getInterestRateModel");
-  }
+  return { model, utilizationRate: formatBalance(utilizationRate, 18) };
 };
 
 // export const getAccountSnapshot = async (

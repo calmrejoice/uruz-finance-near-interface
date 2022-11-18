@@ -9,7 +9,11 @@ export function truncateHash(hash: string, length = 38): string {
   return hash.replace(hash.substring(6, length), "...");
 }
 
-export function formatBalance(bigNumber: BigNumber | number, decimals: number) {
+export function formatBalance(
+  bigNumber: BigNumber | number | undefined,
+  decimals: number
+) {
+  if (!bigNumber) return 0;
   // @ts-ignore
   const balance = bigNumber / (1 * 10 ** decimals);
   return balance;

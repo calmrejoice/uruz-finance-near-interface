@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Badge,
   Box,
@@ -26,24 +26,143 @@ import {
   Spacer,
   Text,
   useColorMode,
+  useToast,
   VStack,
 } from "@chakra-ui/react";
 import { IoCartSharp } from "react-icons/io5";
+import { Contract } from "@ethersproject/contracts";
 
-import { IPool } from "@constants/mockLendingPools";
-import { BRAND_COLOR } from "@styles/styleConstants";
 import { TabHeading } from "./TabHeading";
 import { IMarket } from "@constants/IMarket";
+import { IMarketDetails } from "@constants/IMarketDetails";
+import {
+  useContractFunction,
+  useEtherBalance,
+  useEthers,
+  useTokenAllowance,
+  useTokenBalance,
+} from "@usedapp/core";
+import { formatBalance, formatDisplayBalance } from "@utils/formatBalance";
+import { delegatorAbi } from "@deployments/index";
+import { BigNumber } from "ethers";
+import { useApprove } from "@hooks/useApprove";
+import { useSupply } from "@hooks/useSupply";
+import { config } from "@constants/config";
+import { useBalance, useUTokenBalance } from "@hooks/useBalance";
+import { useWithdraw } from "@hooks/useWithdraw";
 
 type SupplyModalProps = {
   isOpen: any;
   onClose: any;
   market: IMarket | undefined;
+  marketDetails: IMarketDetails | undefined;
 };
 
-export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
+export const SupplyModal = ({
+  isOpen,
+  onClose,
+  market,
+  marketDetails,
+}: SupplyModalProps) => {
   const [tab, setTab] = useState("supply");
   const { colorMode } = useColorMode();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [supplyAmount, setSupplyAmount] = useState<any>("");
+  const [withdrawAmount, setWithdrawAmount] = useState<any>("");
+
+  const { account } = useEthers();
+
+  const isEth = market?.collateralSymbol === "ETH";
+
+  const { balance, balanceNum } = useBalance(
+    market?.collateralAddress,
+    account,
+    isEth
+  );
+
+  const { balance: utokenBalance, balanceNum: utokenBalanceNum } =
+    useUTokenBalance(market?.utokenAddress, account);
+
+  const { sendSupply, statusSupply } = useSupply(
+    market?.utokenAddress,
+    supplyAmount,
+    isEth
+  );
+  const handleSupply = async () => {
+    if (!supplyAmount) return;
+    setIsLoading(true);
+    await sendSupply();
+
+    setIsLoading(false);
+  };
+
+  const { sendWithdraw, statusWithdraw } = useWithdraw(
+    market?.utokenAddress,
+    withdrawAmount
+  );
+
+  const handleWithdraw = async () => {
+    if (!withdrawAmount) return;
+    setIsLoading(true);
+    await sendWithdraw();
+    setIsLoading(false);
+  };
+
+  const allowanceBN = useTokenAllowance(
+    market?.collateralAddress,
+    account,
+    market?.utokenAddress
+  );
+
+  const isApproved =
+    (allowanceBN && allowanceBN >= config.unlimitedApprovalAmount) || false;
+
+  const { sendApprove, statusApprove } = useApprove(
+    market?.collateralAddress,
+    market?.utokenAddress
+  );
+
+  const handleApprove = async () => {
+    setIsLoading(true);
+    await sendApprove();
+    setIsLoading(false);
+  };
+
+  const renderButton = () => {
+    if (!isApproved && !isEth) {
+      return (
+        <Button
+          width="100%"
+          my="6"
+          onClick={handleApprove}
+          isLoading={isLoading}
+        >
+          Approve {market?.collateralSymbol}
+        </Button>
+      );
+    } else {
+      return (
+        <Button
+          width="100%"
+          my="6"
+          onClick={tab === "supply" ? handleSupply : handleWithdraw}
+          isLoading={isLoading}
+        >
+          {tab === "supply" ? "Supply" : "Withdraw"} {market?.collateralSymbol}
+        </Button>
+      );
+    }
+  };
+
+  const handleMaxSupply = () => {
+    setSupplyAmount(balanceNum?.toString());
+  };
+
+  const handleMaxWithdraw = () => {
+    setWithdrawAmount(utokenBalanceNum?.toString());
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -65,7 +184,7 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
             <Text variant="helper">Supplied</Text>
             <Spacer />
 
-            <Text>0.00</Text>
+            <Text>{marketDetails?.totalSupply}</Text>
             <Text>{market?.collateralSymbol}</Text>
           </HStack>
 
@@ -73,14 +192,14 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
             <Text variant="helper">Supply APY</Text>
             <Spacer />
 
-            <Badge colorScheme="green">pool?.apy</Badge>
+            <Badge colorScheme="green">{marketDetails?.apy}</Badge>
           </HStack>
 
           <HStack fontWeight="bold">
             <Text variant="helper">Total withdrawal available</Text>
             <Spacer />
 
-            <Text>363.60M</Text>
+            <Text>{marketDetails?.totalCash}</Text>
             <Text>{market?.collateralSymbol}</Text>
           </HStack>
 
@@ -118,9 +237,13 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
                       size="sm"
                     />
                     <Text display="inline" fontWeight="bold">
-                      0.000
+                      {tab === "supply" ? balance : utokenBalance}
                     </Text>
-                    <Text>{market?.collateralSymbol} </Text>
+                    <Text>
+                      {tab === "supply"
+                        ? market?.collateralSymbol
+                        : "u" + market?.collateralSymbol}
+                    </Text>
                   </HStack>
                 </FormLabel>
                 <InputGroup>
@@ -130,6 +253,13 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
                   <Input
                     type="number"
                     fontSize="sm"
+                    min={0}
+                    value={tab === "supply" ? supplyAmount : withdrawAmount}
+                    onChange={(e) => {
+                      tab === "supply"
+                        ? setSupplyAmount(e.target.value)
+                        : setWithdrawAmount(e.target.value);
+                    }}
                     variant="filled"
                     _focus={{
                       boxShadow: "none",
@@ -146,6 +276,9 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
                       pr="3"
                       fontSize="sm"
                       textDecor="underline"
+                      onClick={
+                        tab === "supply" ? handleMaxSupply : handleMaxWithdraw
+                      }
                     >
                       Max
                     </Text>
@@ -156,11 +289,7 @@ export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
                   on market supply and demand.
                 </FormHelperText>
               </FormControl>
-
-              <Button width="100%" my="6">
-                {tab === "supply" ? "Supply" : "Withdraw"}{" "}
-                {market?.collateralSymbol}
-              </Button>
+              {renderButton()}
             </Flex>
           </Box>
         </ModalBody>
