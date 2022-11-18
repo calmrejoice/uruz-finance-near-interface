@@ -1,10 +1,10 @@
-import { config } from "@constants/config";
+import { address, config } from "@constants/config";
 import {
   convertToUnderlyingBalance,
   formatBalance,
   formatDisplayBalance,
 } from "@utils/formatBalance";
-import { comptrollerAbi, delegatorAbi } from "../deployments";
+import { comptrollerAbi, delegatorAbi, jumpRateModelAbi } from "../deployments";
 import axios from "axios";
 import { generateInterestModelArray } from "./generateInterestModelArray";
 import { ethers } from "ethers";
@@ -41,53 +41,48 @@ import { provider } from "@utils/etherUtils";
 //   };
 // };
 
-// export const getUTokenApy = async (contract: any) => {
-//   // Supply and Borrow APY
-//   const mantissa = 10 ** config.trc20TokenDecimals;
-//   const blocksPerDay = 20 * 60 * 24;
-//   const daysPerYear = 365;
-//   const supplyRatePerBlock = await contract.supplyRatePerBlock().call();
-//   const borrowRatePerBlock = await contract.borrowRatePerBlock().call();
-//   const supplyApy =
-//     (Math.pow((supplyRatePerBlock / mantissa) * blocksPerDay + 1, daysPerYear) -
-//       1) *
-//     100;
-//   const borrowApy =
-//     (Math.pow((borrowRatePerBlock / mantissa) * blocksPerDay + 1, daysPerYear) -
-//       1) *
-//     100;
+export const getUTokenApy = async (contract: any) => {
+  // Supply and Borrow APY
+  const mantissa = 10 ** config.erc20TokenDecimals;
+  const blocksPerDay = 20 * 60 * 24;
+  const daysPerYear = 365;
+  const supplyRatePerBlock = await contract.supplyRatePerBlock();
+  const borrowRatePerBlock = await contract.borrowRatePerBlock();
+  const supplyApy =
+    (Math.pow((supplyRatePerBlock / mantissa) * blocksPerDay + 1, daysPerYear) -
+      1) *
+    100;
+  const borrowApy =
+    (Math.pow((borrowRatePerBlock / mantissa) * blocksPerDay + 1, daysPerYear) -
+      1) *
+    100;
 
-//   return { supplyApy, borrowApy };
-// };
+  return { supplyApy, borrowApy };
+};
 
 export const getUTokenDetails = async (
   utokenAddress: string,
-  collateralDecimals: number,
-  isTrx: boolean
+  collateralDecimals: number
 ) => {
   if (!utokenAddress) return;
   const contract = new ethers.Contract(utokenAddress, delegatorAbi, provider);
 
   const totalBorrow = await contract.totalBorrows();
 
-  const totalSupply = await contract.totalSupply().call();
-  const totalReserves = await contract.totalReserves().call();
-  const reserveFactor = await contract.reserveFactorMantissa().call();
-  const totalCash = await contract.getCash().call();
+  const totalSupply = await contract.totalSupply();
+  const totalReserves = await contract.totalReserves();
+  const reserveFactor = await contract.reserveFactorMantissa();
+  const totalCash = await contract.getCash();
 
   const { supplyApy, borrowApy } = await getUTokenApy(contract);
 
   // Exchange rate
-  const exchangeRateRaw = await contract.exchangeRateStored().call();
-  const underlyingDecimals =
-    isTrx || utokenAddress === config.uusdtAddress
-      ? config.trxDecimals
-      : config.trc20TokenDecimals;
+  const exchangeRateRaw = await contract.exchangeRateStored();
+  const underlyingDecimals = config.erc20TokenDecimals;
   const rateMantissa = 18 + underlyingDecimals - config.utokenDecimals;
 
   // @ts-ignore
   const oneUTokenInUnderlying = exchangeRateRaw / Math.pow(10, rateMantissa);
-  // console.log("1 utoken can be redeemed for", oneUTokenInUnderlying, "token");
   const oneUnderlyingInUToken = 1 / oneUTokenInUnderlying;
 
   if (contract) {
@@ -118,75 +113,77 @@ export const getUTokenDetails = async (
 //   return isApproved;
 // };
 
-// export const getComptrollerDetails = async (utokenAddress: string) => {
-//   try {
-//     const contract = await tronWeb.nile.contract(
-//       comptroller.abi,
-//       config.unitrollerAddress
-//     );
+export const getComptrollerDetails = async (utokenAddress: string) => {
+  if (!utokenAddress) return;
+  const contract = new ethers.Contract(
+    address.unitroller,
+    comptrollerAbi,
+    provider
+  );
+  const market = await contract.markets(utokenAddress);
+  return {
+    collateralFactor: formatBalance(market?.collateralFactorMantissa, 18),
+  };
+};
 
-//     const data = await contract.markets(utokenAddress).call();
+export const getTokenPrice = async (tokenSymbol: string) => {
+  try {
+    const tokenPriceUrl = `https://min-api.cryptocompare.com/data/price?fsym=${tokenSymbol}&tsyms=USD`;
 
-//     const collateralFactorRaw = data?.collateralFactorMantissa;
+    if (tokenSymbol === "URZ") {
+      return 0.369;
+    } else {
+      const { data }: any = await axios.get(tokenPriceUrl);
 
-//     const collateralFactor = collateralFactorRaw?.toString();
+      return parseFloat(data?.USD);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
 
-//     return {
-//       collateralFactor: formatBalance(collateralFactor, 18),
-//     };
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+export const getInterestRateModel = async (utokenAddress: string) => {
+  if (!utokenAddress) return;
+  try {
+    const utokenContract = new ethers.Contract(
+      utokenAddress,
+      delegatorAbi,
+      provider
+    );
+    const reserveFactor = await utokenContract.reserveFactorMantissa();
+    const cash = await utokenContract.getCash();
+    const borrows = await utokenContract.totalBorrows();
+    const reserves = await utokenContract.totalReserves();
+    const interestAddress = await utokenContract.interestRateModel();
 
-// export const getTokenPrice = async (tokenSymbol: string) => {
-//   try {
-//     const { data } = await axios.get(config.tokenPriceUrl);
-//     const { USDT, TRX } = data.data || {};
-//     if (tokenSymbol === "TRX") {
-//       return parseFloat(TRX?.quote.USD.price);
-//     } else if (tokenSymbol === "URZ") {
-//       return parseFloat("0.369");
-//     } else if (tokenSymbol === "USDT") {
-//       return parseFloat(USDT?.quote.USD.price);
-//     }
-//     return 0.01;
-//   } catch (error) {
-//     console.log(error);
-//   }
-// };
+    const interestContract = new ethers.Contract(
+      interestAddress,
+      jumpRateModelAbi,
+      provider
+    );
+    const mulPerBlock = await interestContract.multiplierPerBlock();
+    const basePerBlock = await interestContract.baseRatePerBlock();
+    const jumpPerBlock = await interestContract.jumpMultiplierPerBlock();
+    const kink = await interestContract.kink();
+    const utilizationRate = await interestContract.utilizationRate(
+      cash,
+      borrows,
+      reserves
+    );
 
-// export const getInterestRateModel = async (utokenAddress: string) => {
-//   try {
-//     const utokenContract = await tronWeb.nile.contract().at(utokenAddress);
-//     const reserveFactor = await utokenContract.reserveFactorMantissa().call();
-//     const cash = await utokenContract.getCash().call();
-//     const borrows = await utokenContract.totalBorrows().call();
-//     const reserves = await utokenContract.totalReserves().call();
-//     const interestAddress = await utokenContract.interestRateModel().call();
+    const model = generateInterestModelArray(
+      mulPerBlock,
+      basePerBlock,
+      reserveFactor,
+      jumpPerBlock,
+      kink
+    );
 
-//     const interestContract = await tronWeb.nile.contract().at(interestAddress);
-//     const mulPerBlock = await interestContract.multiplierPerBlock().call();
-//     const basePerBlock = await interestContract.baseRatePerBlock().call();
-//     const jumpPerBlock = await interestContract.jumpMultiplierPerBlock().call();
-//     const kink = await interestContract.kink().call();
-//     const utilizationRate = await interestContract
-//       .utilizationRate(cash, borrows, reserves)
-//       .call();
-
-//     const model = generateInterestModelArray(
-//       mulPerBlock,
-//       basePerBlock,
-//       reserveFactor,
-//       jumpPerBlock,
-//       kink
-//     );
-
-//     return { model, utilizationRate: formatBalance(utilizationRate, 18) };
-//   } catch (error) {
-//     console.log(error, "getInterestRateModel");
-//   }
-// };
+    return { model, utilizationRate: formatBalance(utilizationRate, 18) };
+  } catch (error) {
+    console.log(error, "getInterestRateModel");
+  }
+};
 
 // export const getAccountSnapshot = async (
 //   utokenAddress: string,

@@ -1,9 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { config } from "@constants/config";
 import {
-  //   getComptrollerDetails,
-  //   getInterestRateModel,
-  //   getTokenPrice,
+  getComptrollerDetails,
+  getInterestRateModel,
+  getTokenPrice,
   getUTokenDetails,
 } from "client/queries";
 import { formatDisplayBalance } from "@utils/formatBalance";
@@ -11,8 +11,6 @@ import { formatDisplayBalance } from "@utils/formatBalance";
 const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   const { query } = req;
   const { tokenSymbol }: any = query;
-
-  const isTrx = tokenSymbol === "TRX";
 
   try {
     if (!tokenSymbol) return;
@@ -39,32 +37,32 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       apy,
       borrowApy,
       oneToExchangeRate,
-    } = (await getUTokenDetails(utokenAddress, collateralDecimals, isTrx)) || {
+    } = (await getUTokenDetails(utokenAddress, collateralDecimals)) || {
       totalSupply: 1,
       oneToExchangeRate: "1",
       totalBorrow: 1,
       borrowApy: "1",
     };
 
-    // const { collateralFactor } =
-    //   (await getComptrollerDetails(utokenAddress)) || {};
+    const { collateralFactor } =
+      (await getComptrollerDetails(utokenAddress)) || {};
 
-    // const priceUsd = (await getTokenPrice(tokenSymbol)) || 1;
+    const priceUsd = (await getTokenPrice(tokenSymbol)) || 1;
 
-    // const totalSuppliedInUnderlying =
-    //   totalSupply / parseFloat(oneToExchangeRate);
+    const totalSuppliedInUnderlying =
+      totalSupply / parseFloat(oneToExchangeRate);
 
-    // const totalSupplyInUsd = (totalSuppliedInUnderlying * priceUsd).toFixed(2);
+    const totalSupplyInUsd = (totalSuppliedInUnderlying * priceUsd).toFixed(2);
 
-    // const totalBorrowedInUsd = (totalBorrow * priceUsd).toFixed(2);
+    const totalBorrowedInUsd = (totalBorrow * priceUsd).toFixed(2);
 
-    // const earnUsdPerDay = (
-    //   (parseFloat(totalBorrowedInUsd) * (parseFloat(borrowApy) / 100)) /
-    //   365
-    // ).toFixed(2);
+    const earnUsdPerDay = (
+      (parseFloat(totalBorrowedInUsd) * (parseFloat(borrowApy) / 100)) /
+      365
+    ).toFixed(2);
 
-    // const { model, utilizationRate } =
-    //   (await getInterestRateModel(utokenAddress)) || {};
+    const { model, utilizationRate } =
+      (await getInterestRateModel(utokenAddress)) || {};
 
     const result = {
       utokenAddress,
@@ -79,14 +77,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       assetImage,
       apy,
       borrowApy,
-      //   collateralFactor,
-      //   oneToExchangeRate,
-      //   totalSupplyInUsd,
-      //   totalBorrowedInUsd,
-      //   earnUsdPerDay,
-      //   priceUsd: formatDisplayBalance(priceUsd, 0),
-      //   model,
-      //   utilizationRate,
+      collateralFactor,
+      oneToExchangeRate,
+      totalSupplyInUsd,
+      totalBorrowedInUsd,
+      earnUsdPerDay,
+      priceUsd: formatDisplayBalance(priceUsd, 0),
+      model,
+      utilizationRate,
       //
       //   borrowPaused: 0,
       //   borrowLimit: "0.000000",

@@ -7,16 +7,8 @@ import {
   Th,
   Td,
   TableContainer,
-  HStack,
-  Image,
-  VStack,
-  Text,
-  Button,
-  Badge,
 } from "@chakra-ui/react";
 
-import { IPool, mockLendingPools } from "constants/mockLendingPools";
-import { SupplyModal } from "./SupplyModal";
 import { AssetTableRow } from "./AssetTableRow";
 import { useMarkets } from "@hooks/swrHooks";
 

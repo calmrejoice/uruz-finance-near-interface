@@ -12,6 +12,7 @@ import {
   useColorMode,
 } from "@chakra-ui/react";
 import { IMarket } from "@constants/IMarket";
+import { useMarketDetails } from "@hooks/swrHooks";
 
 import { useRouter } from "next/router";
 import { BorrowModal } from "./BorrowModal";
@@ -22,6 +23,10 @@ type AssetTableRowProps = {
 };
 
 export const AssetTableRow = ({ market }: AssetTableRowProps) => {
+  const { marketDetails } = useMarketDetails(market?.collateralSymbol);
+
+  console.log(marketDetails);
+
   const {
     isOpen: isOpenSupply,
     onClose: onCloseSupply,
