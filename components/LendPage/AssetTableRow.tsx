@@ -11,17 +11,17 @@ import {
   Button,
   useColorMode,
 } from "@chakra-ui/react";
+import { IMarket } from "@constants/IMarket";
 
-import { IPool } from "@constants/mockLendingPools";
 import { useRouter } from "next/router";
 import { BorrowModal } from "./BorrowModal";
 import { SupplyModal } from "./SupplyModal";
 
 type AssetTableRowProps = {
-  pool: IPool;
+  market: IMarket;
 };
 
-export const AssetTableRow = ({ pool }: AssetTableRowProps) => {
+export const AssetTableRow = ({ market }: AssetTableRowProps) => {
   const {
     isOpen: isOpenSupply,
     onClose: onCloseSupply,
@@ -41,7 +41,7 @@ export const AssetTableRow = ({ pool }: AssetTableRowProps) => {
   const onClickMarketDetails = () => {
     router.push({
       pathname: "marketDetails",
-      query: { tokenSymbol: pool.symbol },
+      query: { tokenSymbol: market.collateralSymbol },
     });
   };
 
@@ -52,39 +52,47 @@ export const AssetTableRow = ({ pool }: AssetTableRowProps) => {
         cursor: "pointer",
       }}
     >
-      <SupplyModal isOpen={isOpenSupply} onClose={onCloseSupply} pool={pool} />
-      <BorrowModal isOpen={isOpenBorrow} onClose={onCloseBorrow} pool={pool} />
+      <SupplyModal
+        isOpen={isOpenSupply}
+        onClose={onCloseSupply}
+        market={market}
+      />
+      <BorrowModal
+        isOpen={isOpenBorrow}
+        onClose={onCloseBorrow}
+        market={market}
+      />
 
       <Td onClick={onClickMarketDetails}>
         <HStack>
-          <Image src={pool.assetImage} boxSize="30px" />
+          <Image src={market.assetImage} boxSize="30px" />
           <VStack spacing="0" alignItems="left">
             <Text fontSize="sm" fontWeight="bold">
-              {pool.symbol}
+              {market.collateralSymbol}
             </Text>
-            <Text variant="helper">{pool.assetName}</Text>
+            <Text variant="helper">{market.collateralName}</Text>
           </VStack>
         </HStack>
       </Td>
 
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        {pool.totalSupply}
+        pool.totalSupply
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="green" fontSize="md">
-          {pool.apy}
+          pool.apy
         </Badge>
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        {pool.totalBorrow}
+        pool.totalBorrow
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
         <Badge colorScheme="red" fontSize="md">
-          {pool.borrowApy}
+          pool.borrowApy
         </Badge>
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        {pool.availableLending}
+        pool.availableLending
       </Td>
 
       <Td>

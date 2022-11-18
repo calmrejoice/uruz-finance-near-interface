@@ -22,7 +22,8 @@
       "@styles/*": ["styles/*"],
       "@assets/*": ["assets/*"],
       "@utils/*": ["utils/*"],
-      "@hooks/*": ["hooks/*"]
+      "@hooks/*": ["hooks/*"],
+      "@deployments/*": ["deployments/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],

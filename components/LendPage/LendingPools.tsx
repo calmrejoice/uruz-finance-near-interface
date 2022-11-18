@@ -18,8 +18,11 @@ import {
 import { IPool, mockLendingPools } from "constants/mockLendingPools";
 import { SupplyModal } from "./SupplyModal";
 import { AssetTableRow } from "./AssetTableRow";
+import { useMarkets } from "@hooks/swrHooks";
 
 export const LendingPools = () => {
+  const { markets } = useMarkets();
+
   return (
     <Card>
       <TableContainer width="100%">
@@ -36,8 +39,8 @@ export const LendingPools = () => {
             </Tr>
           </Thead>
           <Tbody>
-            {mockLendingPools.map((pool, index) => {
-              return <AssetTableRow key={index} pool={pool} />;
+            {markets?.map((market, index) => {
+              return <AssetTableRow key={index} market={market} />;
             })}
           </Tbody>
         </Table>

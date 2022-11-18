@@ -12,10 +12,38 @@ import { useRouter } from "next/router";
 
 import { UruzLogo } from "./UruzLogo";
 import { PageLink } from "./PageLink";
+import { useEthers, AuroraTestnet } from "@usedapp/core";
+import { truncateHash } from "@utils/formatBalance";
 
 export const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const router = useRouter();
+
+  const { account, deactivate, chainId, activateBrowserWallet, switchNetwork } =
+    useEthers();
+
+  const wrongNetwork = chainId !== AuroraTestnet.chainId;
+
+  const renderButton = () => {
+    if (!account) {
+      return <Button onClick={activateBrowserWallet}>Connect</Button>;
+    } else if (wrongNetwork) {
+      return (
+        <Button
+          colorScheme="red"
+          variant="solid"
+          fontSize="sm"
+          onClick={async () => {
+            await switchNetwork(AuroraTestnet.chainId);
+          }}
+        >
+          Wrong Network
+        </Button>
+      );
+    } else {
+      return <Button>{truncateHash(account)}</Button>;
+    }
+  };
 
   return (
     <Flex flexDir="row" mx="9" my="9">
@@ -35,7 +63,7 @@ export const Header = () => {
           icon={colorMode === "dark" ? <FaSun /> : <FaRegMoon />}
           onClick={toggleColorMode}
         />
-        <Button>Connect</Button>
+        {renderButton()}
       </HStack>
     </Flex>
   );

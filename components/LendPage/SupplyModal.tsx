@@ -33,14 +33,15 @@ import { IoCartSharp } from "react-icons/io5";
 import { IPool } from "@constants/mockLendingPools";
 import { BRAND_COLOR } from "@styles/styleConstants";
 import { TabHeading } from "./TabHeading";
+import { IMarket } from "@constants/IMarket";
 
 type SupplyModalProps = {
   isOpen: any;
   onClose: any;
-  pool: IPool | undefined;
+  market: IMarket | undefined;
 };
 
-export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
+export const SupplyModal = ({ isOpen, onClose, market }: SupplyModalProps) => {
   const [tab, setTab] = useState("supply");
   const { colorMode } = useColorMode();
 
@@ -50,10 +51,10 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
       <ModalContent>
         <ModalHeader>
           <HStack>
-            <Image src={pool?.assetImage} boxSize="30px" />
+            <Image src={market?.assetImage} boxSize="30px" />
             <VStack alignItems="left" spacing="0" fontWeight="bold">
-              <Text fontSize="md">{pool?.symbol}</Text>
-              <Text variant="helper">{pool?.assetName}</Text>
+              <Text fontSize="md">{market?.collateralSymbol}</Text>
+              <Text variant="helper">{market?.collateralName}</Text>
             </VStack>
           </HStack>
         </ModalHeader>
@@ -65,14 +66,14 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
             <Spacer />
 
             <Text>0.00</Text>
-            <Text>{pool?.symbol}</Text>
+            <Text>{market?.collateralSymbol}</Text>
           </HStack>
 
           <HStack my="1">
             <Text variant="helper">Supply APY</Text>
             <Spacer />
 
-            <Badge colorScheme="green">{pool?.apy}</Badge>
+            <Badge colorScheme="green">pool?.apy</Badge>
           </HStack>
 
           <HStack fontWeight="bold">
@@ -80,7 +81,7 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
             <Spacer />
 
             <Text>363.60M</Text>
-            <Text>{pool?.symbol}</Text>
+            <Text>{market?.collateralSymbol}</Text>
           </HStack>
 
           <Box
@@ -119,12 +120,12 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
                     <Text display="inline" fontWeight="bold">
                       0.000
                     </Text>
-                    <Text>{pool?.symbol} </Text>
+                    <Text>{market?.collateralSymbol} </Text>
                   </HStack>
                 </FormLabel>
                 <InputGroup>
                   <InputLeftElement>
-                    <Image src={pool?.assetImage} boxSize="20px" />
+                    <Image src={market?.assetImage} boxSize="20px" />
                   </InputLeftElement>
                   <Input
                     type="number"
@@ -157,7 +158,8 @@ export const SupplyModal = ({ isOpen, onClose, pool }: SupplyModalProps) => {
               </FormControl>
 
               <Button width="100%" my="6">
-                {tab === "supply" ? "Supply" : "Withdraw"} {pool?.symbol}
+                {tab === "supply" ? "Supply" : "Withdraw"}{" "}
+                {market?.collateralSymbol}
               </Button>
             </Flex>
           </Box>

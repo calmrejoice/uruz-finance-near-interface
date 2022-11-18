@@ -25,7 +25,7 @@ export const mockLendingPools: IPool[] = [
   {
     assetName: "Wrapped Near",
     symbol: "wNEAR",
-    assetImage: "/tokens/wnear.png",
+    assetImage: "/tokens/eth.png",
     totalSupply: "$29.53M",
     apy: "5.38%",
     totalBorrow: "$8.17M",

@@ -1,7 +1,6 @@
 import type { NextPage } from "next";
-import { Flex, Heading, Text, useColorMode } from "@chakra-ui/react";
+import { Flex, Heading, useColorMode } from "@chakra-ui/react";
 
-import { Card } from "@components/Shared/Card";
 import { LendStats } from "@components/LendPage/LendStats";
 import { LendingPools } from "@components/LendPage/LendingPools";
 
