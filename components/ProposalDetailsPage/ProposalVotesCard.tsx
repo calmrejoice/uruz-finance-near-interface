@@ -1,72 +1,51 @@
-import {
-  Badge,
-  Button,
-  Flex,
-  Heading,
-  HStack,
-  Progress,
-  Spacer,
-  Text,
-} from "@chakra-ui/react";
+import { Button, Flex, HStack, Spacer, Text, Tooltip } from "@chakra-ui/react";
 import { Card } from "@components/Shared/Card";
-import { IProposal } from "@constants/mockProposals";
+import { address, config } from "@constants/config";
+import { useBalance } from "@hooks/useBalance";
+import { useVotesCastedOnProposal } from "@hooks/useGovernance";
+import { useEthers } from "@usedapp/core";
+import { formatDisplayBalance, numberWithCommas } from "@utils/formatBalance";
 
-type ProposalVotesCardProps = {
-  proposal: IProposal | undefined;
-};
+export const ProposalVotesCard = ({ proposalId }: any) => {
+  const { account } = useEthers();
+  const { balanceNum: wurzBalanceNum } = useBalance(
+    address.wurz,
+    account,
+    false
+  );
 
-export const ProposalVotesCard = ({ proposal }: ProposalVotesCardProps) => {
+  const { votesCastedOnProposal } = useVotesCastedOnProposal(
+    account,
+    proposalId
+  );
+
   return (
-    <Card flex={2}>
-      <Flex flexDir="column" alignItems="flex-start" width="100%">
-        <Badge># {proposal?.id}</Badge>
-        <Heading fontSize="lg" my="6">
-          {proposal?.description?.title}
-        </Heading>
+    <Card flexDir="column">
+      <HStack mb="3">
+        <Text variant="helper">My total votes on UFP-{proposalId}</Text>
+        <Spacer />
+        <Text fontWeight="bold">{votesCastedOnProposal}</Text>
+      </HStack>
 
-        <HStack spacing="9" width="100%">
-          <Flex flexDir="column" width="100%">
-            <HStack>
-              <Text variant="helper">For</Text>
-              <Spacer />
-              <Text fontWeight="semibold" fontSize="sm">
-                {proposal?.forVotesWei}
-              </Text>
-            </HStack>
+      <HStack mb="6">
+        <Text variant="helper">My total votes remaining</Text>
+        <Spacer />
+        <Text fontWeight="bold">
+          {numberWithCommas(wurzBalanceNum?.toFixed(0)!)}
+        </Text>
+      </HStack>
 
-            <Progress
-              colorScheme="yellow"
-              borderRadius="full"
-              size="xs"
-              value={20}
-              my="3"
-              bgColor="gray.400"
-            />
-
-            <Button>For</Button>
-          </Flex>
-          <Flex flexDir="column" width="100%">
-            <HStack>
-              <Text variant="helper">Against</Text>
-              <Spacer />
-              <Text fontWeight="semibold" fontSize="sm">
-                {proposal?.againstVotesWei}
-              </Text>
-            </HStack>
-
-            <Progress
-              colorScheme="yellow"
-              borderRadius="full"
-              size="xs"
-              value={20}
-              my="3"
-              bgColor="gray.400"
-            />
-
-            <Button>Against</Button>
-          </Flex>
-        </HStack>
-      </Flex>
+      <Tooltip label="Votes can be redeemed after voting period has ended or in the event where the proposal is cancelled.">
+        <Button
+          w="100%"
+          variant="outline"
+          fontSize="sm"
+          //   onClick={handleExchange}
+          isDisabled={true}
+        >
+          Redeem votes back to URZ
+        </Button>
+      </Tooltip>
     </Card>
   );
 };

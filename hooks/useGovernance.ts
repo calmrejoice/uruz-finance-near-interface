@@ -1,5 +1,6 @@
 import { Contract } from "@ethersproject/contracts";
 import { useCall, useContractFunction } from "@usedapp/core";
+import web3 from "web3";
 
 import { governorAbi, wurzAbi } from "@deployments/index";
 import { address } from "@constants/config";
@@ -26,7 +27,7 @@ export const useVotesCasted = (ownerAddress: string | undefined) => {
   return { votesCastedNum, votesCasted };
 };
 
-export const useCreateProposal = async (reserveFactorPercent: number) => {
+export const useCreateProposal = (reserveFactorPercent: number) => {
   const contract = new Contract(address.governorAlpha, governorAbi);
   const { state, send } = useContractFunction(contract, "propose", {
     transactionName: "create proposal",
@@ -41,10 +42,10 @@ export const useCreateProposal = async (reserveFactorPercent: number) => {
   const reserveFactorBN = BigNumber.from(reserveFactorPercent).mul(
     BigNumber.from((1e16).toString())
   );
-  const encode = await abi.encode(["uint256"], [reserveFactorBN]);
+  const encode = abi.encode(["uint256"], [reserveFactorBN]);
   const calldatas = [encode];
 
-  // console.log(encode);
+  console.log(encode);
 
   // const decode = await abi.decode(["uint256"], encode);
   // console.log(decode.toString());
@@ -57,4 +58,49 @@ export const useCreateProposal = async (reserveFactorPercent: number) => {
   useToastTransactionStatus(state);
 
   return { sendPropose, statusPropose };
+};
+
+export const useVotesCastedOnProposal = (
+  ownerAddress: string | undefined,
+  proposalId: number | undefined
+) => {
+  const { value, error } =
+    useCall(
+      proposalId &&
+        ownerAddress && {
+          contract: new Contract(address.wurz, wurzAbi),
+          method: "lockTo",
+          args: [ownerAddress, proposalId],
+        }
+    ) ?? {};
+  if (error) {
+    console.error(error.message);
+  }
+  const votesCastedBN = value?.[0];
+  const votesCastedOnProposalNum =
+    votesCastedBN && formatBalance(votesCastedBN, 18);
+  const votesCastedOnProposal =
+    votesCastedBN && formatDisplayBalance(votesCastedBN, 18);
+
+  return { votesCastedOnProposalNum, votesCastedOnProposal };
+};
+
+export const useCastVote = (
+  proposalId: number | undefined,
+  numOfVotes: string | undefined,
+  support: boolean
+) => {
+  const contract = new Contract(address.governorAlpha, governorAbi);
+  const { state, send } = useContractFunction(contract, "castVote", {
+    transactionName: "castVote",
+  });
+  const { status: statusCastVote } = state;
+
+  const numOfVotesWei = numOfVotes && web3.utils.toWei(numOfVotes);
+
+  const sendCastVote = () => send(proposalId, numOfVotesWei, support);
+
+  useToastTransactionStatus(state);
+
+  return { sendCastVote, statusCastVote };
 };

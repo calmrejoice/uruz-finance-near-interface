@@ -3,7 +3,6 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   Flex,
@@ -11,13 +10,11 @@ import {
   Button,
   HStack,
   Image,
-  Heading,
   Input,
   InputGroup,
   InputRightElement,
   InputLeftElement,
   Spacer,
-  useToast,
 } from "@chakra-ui/react";
 import { address } from "@constants/config";
 import { useApprove, useApprovalStatus } from "@hooks/useApprove";
@@ -26,14 +23,13 @@ import { useStake } from "@hooks/useStake";
 import { useEthers } from "@usedapp/core";
 import { useState } from "react";
 
-export const StakeModal = ({ isOpen, onClose, refreshParams }: any) => {
+export const StakeModal = ({ isOpen, onClose }: any) => {
   const { account } = useEthers();
 
   const { balanceNum, balance } = useBalance(address.urz, account, false);
 
   const [isLoading, setIsLoading] = useState(false);
   const [stakeAmount, setStakeAmount] = useState<any>("");
-  const toast = useToast();
 
   const { sendStake } = useStake(stakeAmount);
 

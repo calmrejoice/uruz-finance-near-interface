@@ -24,10 +24,11 @@ export const CreateProposalModal = ({ isOpen, onClose }: any) => {
   const [action, setAction] = useState("");
   const [reserveFactor, setReserveFactor] = useState(0);
 
+  const { sendPropose } = useCreateProposal(reserveFactor);
   const [isLoading, setIsLoading] = useState(false);
   const handleCreateProposal = async () => {
     setIsLoading(true);
-    await useCreateProposal(reserveFactor);
+    await sendPropose();
     setIsLoading(false);
   };
 
