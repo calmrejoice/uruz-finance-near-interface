@@ -1,35 +1,33 @@
-import { useEffect, useState } from "react";
 import {
-  Badge,
   Button,
   Flex,
-  Heading,
   HStack,
   Image,
   SimpleGrid,
   Text,
   useDisclosure,
-  VStack,
 } from "@chakra-ui/react";
 import { Card } from "@components/Shared/Card";
-import { IPool, mockLendingPools } from "@constants/mockLendingPools";
-import { useRouter } from "next/router";
 import { MarketInfoItem } from "./MarketInfoItem";
 import { SupplyModal } from "@components/LendPage/SupplyModal";
 import { BorrowModal } from "@components/LendPage/BorrowModal";
+import { formatDisplayBalance } from "@utils/formatBalance";
+import { IMarket } from "@constants/IMarket";
+import { IMarketDetails } from "@constants/IMarketDetails";
 
-export const MarketInfoCard = () => {
-  const router = useRouter();
+type MarketInfoCardProps = {
+  market: IMarket;
+  marketDetails: IMarketDetails;
+  isLoadingMarketDetails: boolean;
+  tokenSymbol: string;
+};
 
-  const { query } = router;
-  const { tokenSymbol } = query;
-
-  const [pool, setPool] = useState<IPool | undefined>();
-
-  useEffect(() => {
-    setPool(mockLendingPools.filter((pool) => pool.symbol === tokenSymbol)[0]);
-  }, [tokenSymbol]);
-
+export const MarketInfoCard = ({
+  market,
+  marketDetails,
+  isLoadingMarketDetails,
+  tokenSymbol,
+}: MarketInfoCardProps) => {
   const {
     isOpen: isOpenSupply,
     onClose: onCloseSupply,
@@ -43,70 +41,109 @@ export const MarketInfoCard = () => {
   } = useDisclosure();
 
   return (
-    <Card flexDir="column" flex={1}>
-      <SupplyModal isOpen={isOpenSupply} onClose={onCloseSupply} pool={pool} />
-      <BorrowModal isOpen={isOpenBorrow} onClose={onCloseBorrow} pool={pool} />
-      <HStack spacing="6">
-        <HStack>
-          <Image src={pool?.assetImage} boxSize="30" />
-          <Flex flexDir="column">
-            <Text fontWeight="bold">{pool?.symbol}</Text>
-            <Text variant="helper">{pool?.assetName}</Text>
-          </Flex>
+    <>
+      <SupplyModal
+        isOpen={isOpenSupply}
+        onClose={onCloseSupply}
+        market={market}
+        marketDetails={marketDetails}
+      />
+      <BorrowModal
+        isOpen={isOpenBorrow}
+        onClose={onCloseBorrow}
+        market={market}
+        marketDetails={marketDetails}
+      />
+      <Card flexDir="column" flex={1}>
+        <HStack spacing="6">
+          <HStack>
+            <Image src={market?.assetImage} boxSize="30" alt="asset logo" />
+            <Flex flexDir="column">
+              <Text fontWeight="bold">{market?.collateralSymbol}</Text>
+              <Text variant="helper">{market?.collateralName}</Text>
+            </Flex>
+          </HStack>
         </HStack>
-      </HStack>
 
-      <SimpleGrid columns={2} my="6">
-        <MarketInfoItem title="Total Supply" details={pool?.totalSupply} />
-        <MarketInfoItem title="Total Borrow" details={pool?.totalBorrow} />
-        <MarketInfoItem title="Price" details={pool?.tokenPrice} />
-        <MarketInfoItem title="Borrow cap" details={pool?.borrowCap} />
-        <MarketInfoItem title="Suppliers" details={pool?.supplierCount} />
-        <MarketInfoItem title="Borrowers" details={pool?.borrowerCount} />
-        <MarketInfoItem
-          title="Available lending"
-          details={pool?.availableLending}
-        />
-        <MarketInfoItem
-          title="Total interest / Day"
-          details={pool?.totalInterestPerDay}
-        />
-        <MarketInfoItem title="Reserve amount" details={pool?.totalReserves} />
-        <MarketInfoItem title="Reserve factor" details={pool?.reserveFactor} />
-        <MarketInfoItem
-          title={`u${pool?.symbol} minted`}
-          details={pool?.totalDistributed}
-        />
-        <MarketInfoItem
-          title="Collateral factor"
-          details={pool?.collateralFactor}
-        />
-        <MarketInfoItem
-          title={`u${pool?.symbol} exchange rate`}
-          details={pool?.exchangeRate}
-        />
-      </SimpleGrid>
+        <SimpleGrid columns={2} my="6">
+          <MarketInfoItem
+            title="Total Supply"
+            details={`$${marketDetails?.totalSupplyInUsd}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Total Borrow"
+            details={`$${marketDetails?.totalBorrowedInUsd}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Price"
+            details={`$${marketDetails?.priceUsd}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          {/* <MarketInfoItem title="Borrow cap" details={pool?.borrowCap} /> */}
+          {/* <MarketInfoItem title="Suppliers" details={pool?.supplierCount} />
+        <MarketInfoItem title="Borrowers" details={pool?.borrowerCount} /> */}
+          <MarketInfoItem
+            title="Available lending"
+            details={`${marketDetails?.totalCash} ${market?.collateralSymbol}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Total interest / Day"
+            details={`$${marketDetails?.earnUsdPerDay}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Reserve amount"
+            details={`${marketDetails?.totalReserves?.toFixed(
+              6
+            )} ${tokenSymbol}`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Reserve factor"
+            details={`${marketDetails?.reserveFactor * 100}%`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title={`u${tokenSymbol} minted`}
+            details={formatDisplayBalance(marketDetails?.totalSupply, 0)}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title="Collateral factor"
+            details={`${marketDetails?.collateralFactor * 100}%`}
+            isLoading={isLoadingMarketDetails}
+          />
+          <MarketInfoItem
+            title={`u${tokenSymbol} exchange rate`}
+            details={`1 ${tokenSymbol} : ${marketDetails?.oneToExchangeRate} u${tokenSymbol}`}
+            isLoading={isLoadingMarketDetails}
+          />
+        </SimpleGrid>
 
-      <HStack spacing="6">
-        <Button
-          width="100%"
-          colorScheme="green"
-          variant="outline"
-          onClick={onOpenSupply}
-          fontSize="sm"
-        >
-          Supply {pool?.apy}
-        </Button>
-        <Button
-          width="100%"
-          colorScheme="red"
-          variant="outline"
-          onClick={onOpenBorrow}
-          fontSize="sm"
-        >
-          Borrow {pool?.borrowApy}
-        </Button>
-      </HStack>
-    </Card>
+        <HStack spacing="6">
+          <Button
+            width="100%"
+            colorScheme="green"
+            variant="outline"
+            onClick={onOpenSupply}
+            fontSize="sm"
+          >
+            Supply {marketDetails?.apy}%
+          </Button>
+          <Button
+            width="100%"
+            colorScheme="red"
+            variant="outline"
+            onClick={onOpenBorrow}
+            fontSize="sm"
+          >
+            Borrow {marketDetails?.borrowApy}%
+          </Button>
+        </HStack>
+      </Card>
+    </>
   );
 };

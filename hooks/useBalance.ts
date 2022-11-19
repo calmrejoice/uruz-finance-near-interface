@@ -8,9 +8,9 @@ export const useBalance = (
   ownerAddress: string | undefined,
   isEth: boolean
 ) => {
-  const balanceBN = isEth
-    ? useEtherBalance(ownerAddress)
-    : useTokenBalance(tokenAddress, ownerAddress);
+  const ethBalance = useEtherBalance(ownerAddress);
+  const tokenBalance = useTokenBalance(tokenAddress, ownerAddress);
+  const balanceBN = isEth ? ethBalance : tokenBalance;
 
   const balanceNum = balanceBN && formatBalance(balanceBN, 18);
   const balance = balanceBN && formatDisplayBalance(balanceBN, 18);
