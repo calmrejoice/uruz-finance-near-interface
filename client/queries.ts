@@ -98,20 +98,6 @@ export const getUTokenDetails = async (
   }
 };
 
-// export const getTokenApprovalStatus = async (
-//   tokenAddress: any,
-//   ownerAddress: any,
-//   spenderAddress: any
-// ) => {
-//   const contract = await tronWeb.nile.contract().at(tokenAddress);
-//   const approvalAmount = await contract
-//     .allowance(ownerAddress, spenderAddress)
-//     .call();
-//   const isApproved = approvalAmount >= config.unlimitedApprovalAmount || false;
-
-//   return isApproved;
-// };
-
 export const getComptrollerDetails = async (utokenAddress: string) => {
   if (!utokenAddress) return;
   const contract = new ethers.Contract(
@@ -176,43 +162,38 @@ export const getInterestRateModel = async (utokenAddress: string) => {
   return { model, utilizationRate: formatBalance(utilizationRate, 18) };
 };
 
-// export const getAccountSnapshot = async (
-//   utokenAddress: string,
-//   accountAddress: string,
-//   tokenSymbol: string,
-//   collateralFactor: number
-// ) => {
-//   const contract = await tronWeb.nile.contract().at(utokenAddress);
-//   const data = await contract.getAccountSnapshot(accountAddress).call();
-//   const utokenBalance = data[1];
-//   const borrowBalance = data[2];
-//   const exchangeRateMantissa = data[3];
-//   const { supplyApy } = await getUTokenApy(contract);
+export const getAccountSnapshot = async (
+  utokenAddress: string,
+  accountAddress: string,
+  tokenSymbol: string,
+  collateralFactor: number
+) => {
+  if (!utokenAddress) return;
+  const contract = new ethers.Contract(utokenAddress, delegatorAbi, provider);
+  const data = await contract.getAccountSnapshot(accountAddress);
+  const utokenBalance = data[1];
+  const borrowBalance = data[2];
+  const exchangeRateMantissa = data[3];
+  const { supplyApy } = await getUTokenApy(contract);
 
-//   const tokenPrice = (await getTokenPrice(tokenSymbol)) || 1;
-//   const decimals =
-//     tokenSymbol === "TRX" || tokenSymbol === "USDT"
-//       ? config.trxDecimals
-//       : config.trc20TokenDecimals;
-//   const underlyingUTokenBalance = convertToUnderlyingBalance(
-//     exchangeRateMantissa,
-//     decimals,
-//     utokenBalance
-//   );
+  const tokenPrice = (await getTokenPrice(tokenSymbol)) || 1;
 
-//   const utokenBalanceInUsd = tokenPrice * underlyingUTokenBalance;
+  const underlyingUTokenBalance = convertToUnderlyingBalance(
+    exchangeRateMantissa,
+    config.erc20TokenDecimals,
+    utokenBalance
+  );
+  const utokenBalanceInUsd = tokenPrice * underlyingUTokenBalance;
+  const borrowLimit = utokenBalanceInUsd * collateralFactor;
+  const borrowBalanceInUsd =
+    formatBalance(borrowBalance, config.erc20TokenDecimals) * tokenPrice;
 
-//   const borrowLimit = utokenBalanceInUsd * collateralFactor;
-
-//   const borrowBalanceInUsd =
-//     formatBalance(borrowBalance, decimals) * tokenPrice;
-
-//   return {
-//     utokenBalance,
-//     borrowBalance,
-//     borrowLimit,
-//     utokenBalanceInUsd,
-//     borrowBalanceInUsd,
-//     apy: supplyApy,
-//   };
-// };
+  return {
+    utokenBalance,
+    borrowBalance,
+    borrowLimit,
+    utokenBalanceInUsd,
+    borrowBalanceInUsd,
+    apy: supplyApy,
+  };
+};

@@ -5,6 +5,7 @@ import { config } from "@constants/config";
 import { IMarket } from "@constants/IMarket";
 import { IMarketDetails } from "@constants/IMarketDetails";
 import { ILendStats } from "@constants/ILendStats";
+import { IPortfolio } from "@constants/IPortfolio";
 
 export const fetcher = (url: any) => axios.get(url).then((res) => res.data);
 
@@ -51,5 +52,22 @@ export const useLendStats = () => {
     lendStats,
     isLoadingLendStats,
     isEmptyLendStats,
+  };
+};
+
+export const usePortfolio = (accountAddress: string | undefined) => {
+  const { data, error } = useSWR(
+    accountAddress ? `/api/portfolio?accountAddress=${accountAddress}` : null,
+    fetcher
+  );
+
+  const portfolio: IPortfolio = data;
+  const isLoadingPortfolio = !data && !error;
+  const isEmptyPortfolio = data?.length === 0;
+
+  return {
+    portfolio,
+    isLoadingPortfolio,
+    isEmptyPortfolio,
   };
 };

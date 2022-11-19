@@ -37,6 +37,7 @@ import { useEthers, useTokenAllowance } from "@usedapp/core";
 import { useRepay } from "@hooks/useRepay";
 import { config } from "@constants/config";
 import { useApprove } from "@hooks/useApprove";
+import { usePortfolio } from "@hooks/swrHooks";
 
 type BorrowModalProps = {
   isOpen: any;
@@ -158,6 +159,10 @@ export const BorrowModal = ({
     setRepayAmount(borrowedBalanceNum?.toString());
   };
 
+  const { portfolio } = usePortfolio(account);
+  const borrowLimitUsed =
+    (portfolio?.totalBorrowBalance / portfolio?.totalBorrowLimit) * 100;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -175,15 +180,15 @@ export const BorrowModal = ({
 
         <ModalBody>
           <HStack fontWeight="bold">
-            <Text variant="helper">Borrow limit</Text>
+            <Text variant="helper">Total borrowed in all markets</Text>
             <Spacer />
-            <Text>$0</Text>
+            <Text>${portfolio?.totalBorrowBalance?.toFixed(2)}</Text>
           </HStack>
 
           <HStack fontWeight="bold">
             <Text variant="helper">Borrow limit used</Text>
             <Spacer />
-            <Text>0%</Text>
+            <Text>{borrowLimitUsed?.toFixed(2)}%</Text>
           </HStack>
 
           <HStack>

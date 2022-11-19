@@ -1,12 +1,16 @@
-import { Flex, Text } from "@chakra-ui/react";
+import { Flex, Skeleton, Text } from "@chakra-ui/react";
 
-export const AccountStat = ({ title, value }: any) => {
+export const AccountStat = ({ title, value, isLoading }: any) => {
   return (
     <Flex flexDir="column">
       <Text variant="helper">{title}</Text>
-      <Text fontSize="xl" fontWeight="bold">
-        {value}
-      </Text>
+      {isLoading ? (
+        <Skeleton>placeholder</Skeleton>
+      ) : (
+        <Text fontSize="xl" fontWeight="bold">
+          {value}
+        </Text>
+      )}
     </Flex>
   );
 };

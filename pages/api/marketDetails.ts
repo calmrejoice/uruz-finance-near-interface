@@ -42,6 +42,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       oneToExchangeRate: "1",
       totalBorrow: 1,
       borrowApy: "1",
+      totalCash: 1,
     };
 
     const { collateralFactor } =
