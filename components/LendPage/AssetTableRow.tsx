@@ -99,7 +99,7 @@ export const AssetTableRow = ({ market }: AssetTableRowProps) => {
         </Badge>
       </Td>
       <Td onClick={onClickMarketDetails} fontWeight="bold">
-        {marketDetails?.totalCash}
+        {marketDetails?.totalCash + " " + market?.collateralSymbol}
       </Td>
 
       <Td>

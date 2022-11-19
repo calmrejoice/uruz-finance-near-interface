@@ -32,6 +32,11 @@ import { IoCartSharp } from "react-icons/io5";
 import { TabHeading } from "./TabHeading";
 import { IMarket } from "@constants/IMarket";
 import { IMarketDetails } from "@constants/IMarketDetails";
+import { useBorrow, useBorrowedBalance } from "@hooks/useBorrow";
+import { useEthers, useTokenAllowance } from "@usedapp/core";
+import { useRepay } from "@hooks/useRepay";
+import { config } from "@constants/config";
+import { useApprove } from "@hooks/useApprove";
 
 type BorrowModalProps = {
   isOpen: any;
@@ -49,6 +54,109 @@ export const BorrowModal = ({
   const [tab, setTab] = useState("borrow");
 
   const { colorMode } = useColorMode();
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const [borrowAmount, setBorrowAmount] = useState<any>("");
+  const [repayAmount, setRepayAmount] = useState<any>("");
+
+  const { account } = useEthers();
+
+  const isEth = market?.collateralSymbol === "ETH";
+  const { balance: borrowedBalance, balanceNum: borrowedBalanceNum } =
+    useBorrowedBalance(market?.utokenAddress, account);
+
+  const { sendBorrow, statusBorrow } = useBorrow(
+    market?.utokenAddress,
+    borrowAmount,
+    isEth
+  );
+  const handleBorrow = async () => {
+    if (!borrowAmount) return;
+    setIsLoading(true);
+    await sendBorrow();
+
+    setIsLoading(false);
+  };
+
+  const { sendRepay, statusRepay } = useRepay(
+    market?.utokenAddress,
+    repayAmount,
+    account,
+    isEth
+  );
+
+  const handleRepay = async () => {
+    if (!repayAmount) return;
+    setIsLoading(true);
+    await sendRepay();
+    setIsLoading(false);
+  };
+
+  // const allowanceBN = useTokenAllowance(
+  //   market?.utokenAddress,
+  //   account,
+  //   market?.utokenAddress
+  // );
+  // console.log(allowanceBN?.toString());
+
+  // const isApproved =
+  //   (allowanceBN && allowanceBN >= config.unlimitedApprovalAmount) || false;
+
+  // const { sendApprove, statusApprove } = useApprove(
+  //   market?.utokenAddress,
+  //   market?.utokenAddress
+  // );
+
+  // const handleApprove = async () => {
+  //   setIsLoading(true);
+  //   await sendApprove();
+  //   setIsLoading(false);
+  // };
+
+  const renderButton = () => {
+    // if (!isApproved && !isEth) {
+    //   return (
+    //     <Button
+    //       width="100%"
+    //       my="6"
+    //       onClick={handleApprove}
+    //       isLoading={isLoading}
+    //     >
+    //       Approve {market?.collateralSymbol}
+    //     </Button>
+    //   );
+    // } else {
+    // return (
+    //   <Button
+    //     width="100%"
+    //     my="6"
+    //     onClick={tab === "borrow" ? handleBorrow : handleRepay}
+    //     isLoading={isLoading}
+    //   >
+    //     {tab === "borrow" ? "Borrow" : "Repay"} {market?.collateralSymbol}
+    //   </Button>
+    // );
+    // }
+    return (
+      <Button
+        width="100%"
+        my="6"
+        onClick={tab === "borrow" ? handleBorrow : handleRepay}
+        isLoading={isLoading}
+      >
+        {tab === "borrow" ? "Borrow" : "Repay"} {market?.collateralSymbol}
+      </Button>
+    );
+  };
+
+  const handleMaxBorrow = () => {
+    setBorrowAmount("1");
+  };
+
+  const handleMaxRepay = () => {
+    setRepayAmount(borrowedBalanceNum?.toString());
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -118,16 +226,15 @@ export const BorrowModal = ({
               <FormControl>
                 <FormLabel fontWeight="semibold" fontSize="sm" mx="0">
                   <HStack spacing="1">
-                    <Text variant="helper">Wallet balance</Text>
+                    <Text variant="helper">Borrowed balance</Text>
                     <Spacer />
                     <IconButton
                       variant="ghost"
                       aria-label="Buy token"
-                      icon={<IoCartSharp />}
                       size="sm"
                     />
                     <Text display="inline" fontWeight="bold">
-                      0.000
+                      {borrowedBalance}
                     </Text>
                     <Text>{market?.collateralSymbol} </Text>
                   </HStack>
@@ -138,8 +245,15 @@ export const BorrowModal = ({
                   </InputLeftElement>
                   <Input
                     type="number"
+                    min={0}
                     fontSize="sm"
                     variant="filled"
+                    value={tab == "borrow" ? borrowAmount : repayAmount}
+                    onChange={(e) => {
+                      tab === "borrow"
+                        ? setBorrowAmount(e.target.value)
+                        : setRepayAmount(e.target.value);
+                    }}
                     _focus={{
                       boxShadow: "none",
                     }}
@@ -155,6 +269,9 @@ export const BorrowModal = ({
                       pr="3"
                       fontSize="sm"
                       textDecor="underline"
+                      onClick={
+                        tab === "borrow" ? handleMaxBorrow : handleMaxRepay
+                      }
                     >
                       Max
                     </Text>
@@ -166,11 +283,7 @@ export const BorrowModal = ({
                   accumulated interest.
                 </FormHelperText>
               </FormControl>
-
-              <Button width="100%" my="6">
-                {tab === "borrow" ? "Borrow" : "Repay"}{" "}
-                {market?.collateralSymbol}
-              </Button>
+              {renderButton()}
             </Flex>
           </Box>
         </ModalBody>

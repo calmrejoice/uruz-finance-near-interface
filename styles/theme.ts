@@ -31,6 +31,7 @@ const buttonStyle = {
       _hover: {
         bgColor: BRAND_HOVER_COLOR,
       },
+      _loading: { _hover: { bgColor: BRAND_COLOR } },
     },
     brandLink: (props: StyleFunctionProps) => ({
       color: mode("black", "white")(props),
