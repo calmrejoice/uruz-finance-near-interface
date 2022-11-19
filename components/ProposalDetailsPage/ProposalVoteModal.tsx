@@ -7,7 +7,6 @@ import {
   ModalBody,
   ModalCloseButton,
   Button,
-  useToast,
   HStack,
   Text,
   Spacer,
@@ -79,7 +78,6 @@ export const ProposalVoteModal = ({
             <Button
               colorScheme="blue"
               isLoading={isLoading}
-              mr={3}
               onClick={async () => {
                 await handleCastVote();
                 onClose();

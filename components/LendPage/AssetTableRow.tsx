@@ -80,7 +80,9 @@ export const AssetTableRow = ({ market }: AssetTableRowProps) => {
             <Text fontSize="sm" fontWeight="bold">
               {market.collateralSymbol}
             </Text>
-            <Text variant="helper">{market.collateralName}</Text>
+            <Text variant="helper" fontSize="xs">
+              {market.collateralName}
+            </Text>
           </VStack>
         </HStack>
       </Td>
