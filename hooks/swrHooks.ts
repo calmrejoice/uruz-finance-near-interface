@@ -4,6 +4,7 @@ import axios from "axios";
 import { config } from "@constants/config";
 import { IMarket } from "@constants/IMarket";
 import { IMarketDetails } from "@constants/IMarketDetails";
+import { ILendStats } from "@constants/ILendStats";
 
 export const fetcher = (url: any) => axios.get(url).then((res) => res.data);
 
@@ -36,5 +37,19 @@ export const useMarketDetails = (tokenSymbol: string) => {
     isLoadingMarketDetails,
     isEmptyMarketDetails,
     mutate,
+  };
+};
+
+export const useLendStats = () => {
+  const { data, error } = useSWR(`/api/lendStats`, fetcher);
+
+  const lendStats: ILendStats = data;
+  const isLoadingLendStats = !data && !error;
+  const isEmptyLendStats = data?.length === 0;
+
+  return {
+    lendStats,
+    isLoadingLendStats,
+    isEmptyLendStats,
   };
 };

@@ -10,6 +10,7 @@ import {
   Badge,
   Button,
   useColorMode,
+  Skeleton,
 } from "@chakra-ui/react";
 import { IMarket } from "@constants/IMarket";
 import { useMarketDetails } from "@hooks/swrHooks";
@@ -23,7 +24,9 @@ type AssetTableRowProps = {
 };
 
 export const AssetTableRow = ({ market }: AssetTableRowProps) => {
-  const { marketDetails } = useMarketDetails(market?.collateralSymbol);
+  const { marketDetails, isLoadingMarketDetails } = useMarketDetails(
+    market?.collateralSymbol
+  );
 
   // console.log(marketDetails);
 
@@ -82,24 +85,51 @@ export const AssetTableRow = ({ market }: AssetTableRowProps) => {
         </HStack>
       </Td>
 
-      <Td onClick={onClickMarketDetails} fontWeight="bold">
-        ${marketDetails?.totalSupplyInUsd}
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          "$" + marketDetails?.totalSupplyInUsd
+        )}
       </Td>
-      <Td onClick={onClickMarketDetails} fontWeight="bold">
-        <Badge colorScheme="green" fontSize="md">
-          {marketDetails?.apy}%
-        </Badge>
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          <Badge colorScheme="green" fontSize="md">
+            {marketDetails?.apy}%
+          </Badge>
+        )}
       </Td>
-      <Td onClick={onClickMarketDetails} fontWeight="bold">
-        ${marketDetails?.totalBorrowedInUsd}
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          "$" + marketDetails?.totalBorrowedInUsd
+        )}
       </Td>
-      <Td onClick={onClickMarketDetails} fontWeight="bold">
-        <Badge colorScheme="red" fontSize="md">
-          {marketDetails?.borrowApy}%
-        </Badge>
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          <Badge colorScheme="red" fontSize="md">
+            {marketDetails?.borrowApy}%
+          </Badge>
+        )}
       </Td>
-      <Td onClick={onClickMarketDetails} fontWeight="bold">
-        {marketDetails?.totalCash + " " + market?.collateralSymbol}
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          marketDetails?.totalCash + " " + market?.collateralSymbol
+        )}
+      </Td>
+      <Td onClick={onClickMarketDetails} fontWeight="bold" isNumeric>
+        {isLoadingMarketDetails ? (
+          <Skeleton>placeholder</Skeleton>
+        ) : (
+          "$" + marketDetails?.priceUsd
+        )}
       </Td>
 
       <Td>

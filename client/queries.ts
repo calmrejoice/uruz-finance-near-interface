@@ -1,3 +1,6 @@
+import { ethers } from "ethers";
+import axios from "axios";
+
 import { address, config } from "@constants/config";
 import {
   convertToUnderlyingBalance,
@@ -5,41 +8,37 @@ import {
   formatDisplayBalance,
 } from "@utils/formatBalance";
 import { comptrollerAbi, delegatorAbi, jumpRateModelAbi } from "../deployments";
-import axios from "axios";
 import { generateInterestModelArray } from "./generateInterestModelArray";
-import { ethers } from "ethers";
+
 import { provider } from "@utils/etherUtils";
 
-// export const getUTokenLendStats = async (
-//   utokenAddress: string,
-//   collateralDecimals: number,
-//   isTrx: boolean
-// ) => {
-//   const contract = await tronWeb.nile.contract().at(utokenAddress);
-//   const totalSupply = await contract.totalSupply().call();
-//   const totalBorrow = await contract.totalBorrows().call();
-//   const totalReserves = await contract.totalReserves().call();
+export const getUTokenLendStats = async (
+  utokenAddress: string,
+  collateralDecimals: number
+) => {
+  if (!utokenAddress) return;
 
-//   // Exchange rate
-//   const exchangeRateRaw = await contract.exchangeRateStored().call();
-//   const underlyingDecimals =
-//     isTrx || utokenAddress === config.uusdtAddress
-//       ? config.trxDecimals
-//       : config.trc20TokenDecimals;
-//   const rateMantissa = 18 + underlyingDecimals - config.utokenDecimals;
+  const contract = new ethers.Contract(utokenAddress, delegatorAbi, provider);
+  const totalSupply = await contract.totalSupply();
+  const totalBorrow = await contract.totalBorrows();
+  const totalReserves = await contract.totalReserves();
 
-//   // @ts-ignore
-//   const oneUTokenInUnderlying = exchangeRateRaw / Math.pow(10, rateMantissa);
-//   // console.log("1 utoken can be redeemed for", oneUTokenInUnderlying, "token");
-//   const oneUnderlyingInUToken = 1 / oneUTokenInUnderlying;
+  // Exchange rate
+  const exchangeRateRaw = await contract.exchangeRateStored();
+  const underlyingDecimals = config.erc20TokenDecimals;
+  const rateMantissa = 18 + underlyingDecimals - config.utokenDecimals;
 
-//   return {
-//     utokenSupply: formatBalance(totalSupply, config.utokenDecimals),
-//     utokenBorrowed: formatBalance(totalBorrow, collateralDecimals),
-//     utokenReserves: formatBalance(totalReserves, collateralDecimals),
-//     oneToExchangeRate: oneUnderlyingInUToken.toFixed(6),
-//   };
-// };
+  // @ts-ignore
+  const oneUTokenInUnderlying = exchangeRateRaw / Math.pow(10, rateMantissa);
+  const oneUnderlyingInUToken = 1 / oneUTokenInUnderlying;
+
+  return {
+    utokenSupply: formatBalance(totalSupply, config.utokenDecimals),
+    utokenBorrowed: formatBalance(totalBorrow, collateralDecimals),
+    utokenReserves: formatBalance(totalReserves, collateralDecimals),
+    oneToExchangeRate: oneUnderlyingInUToken.toFixed(6),
+  };
+};
 
 export const getUTokenApy = async (contract: any) => {
   // Supply and Borrow APY
