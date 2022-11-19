@@ -16,7 +16,8 @@ export const useRepay = (
 
   const abi = isEth ? CEtherAbi : delegatorAbi;
   const contract = utokenAddress && new Contract(utokenAddress, abi);
-  const { state, send } = useContractFunction(contract, "repayBorrowBehalf", {
+  const functionName = isEth ? "repayBorrowBehalf" : "repayBorrow";
+  const { state, send } = useContractFunction(contract, functionName, {
     transactionName: "repay",
     // gasLimitBufferPercentage: 10,
   });

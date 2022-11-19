@@ -1,5 +1,5 @@
 import { Contract } from "@ethersproject/contracts";
-import { useContractFunction } from "@usedapp/core";
+import { useContractFunction, useTokenAllowance } from "@usedapp/core";
 
 import { delegatorAbi } from "@deployments/index";
 import { config } from "@constants/config";
@@ -21,4 +21,21 @@ export const useApprove = (
   useToastTransactionStatus(state);
 
   return { sendApprove, statusApprove };
+};
+
+export const useApprovalStatus = (
+  tokenAddress: string | undefined,
+  ownerAddress: string | undefined,
+  spenderAddress: string | undefined
+) => {
+  const allowanceBN = useTokenAllowance(
+    tokenAddress,
+    ownerAddress,
+    spenderAddress
+  );
+
+  const isApproved =
+    (allowanceBN && allowanceBN >= config.unlimitedApprovalAmount) || false;
+
+  return isApproved;
 };

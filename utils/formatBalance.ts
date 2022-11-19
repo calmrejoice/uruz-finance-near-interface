@@ -2,7 +2,7 @@ import { config } from "@constants/config";
 import { BigNumber } from "ethers";
 
 export function numberWithCommas(x: string) {
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  return x?.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export function truncateHash(hash: string, length = 38): string {

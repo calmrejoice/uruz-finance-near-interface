@@ -45,7 +45,7 @@ import {
 import { formatBalance, formatDisplayBalance } from "@utils/formatBalance";
 import { delegatorAbi } from "@deployments/index";
 import { BigNumber } from "ethers";
-import { useApprove } from "@hooks/useApprove";
+import { useApprovalStatus, useApprove } from "@hooks/useApprove";
 import { useSupply } from "@hooks/useSupply";
 import { config } from "@constants/config";
 import { useBalance, useUTokenBalance } from "@hooks/useBalance";
@@ -110,14 +110,11 @@ export const SupplyModal = ({
     setIsLoading(false);
   };
 
-  const allowanceBN = useTokenAllowance(
+  const isApproved = useApprovalStatus(
     market?.collateralAddress,
     account,
     market?.utokenAddress
   );
-
-  const isApproved =
-    (allowanceBN && allowanceBN >= config.unlimitedApprovalAmount) || false;
 
   const { sendApprove, statusApprove } = useApprove(
     market?.collateralAddress,

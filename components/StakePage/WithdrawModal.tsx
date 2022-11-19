@@ -16,16 +16,70 @@ import {
   InputRightElement,
   Spacer,
   Button,
+  useToast,
 } from "@chakra-ui/react";
+import { address, config } from "@constants/config";
+import { useApprove, useApprovalStatus } from "@hooks/useApprove";
+import { useBalance } from "@hooks/useBalance";
+import { useWithdrawGovToken } from "@hooks/useWithdraw";
+import { useEthers } from "@usedapp/core";
+import { useState } from "react";
 
-export const WithdrawModal = ({ isOpen, onClose }: any) => {
+export const WithdrawModal = ({ isOpen, onClose, refreshParams }: any) => {
+  const { account } = useEthers();
+
+  const { balanceNum, balance } = useBalance(address.wurz, account, false);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [withdrawAmount, setWithdrawAmount] = useState<any>("");
+
+  const { sendWithdraw } = useWithdrawGovToken(withdrawAmount);
+
+  const handleWithdraw = async () => {
+    if (!withdrawAmount) return;
+    setIsLoading(true);
+    await sendWithdraw();
+    setIsLoading(false);
+    onClose();
+  };
+
+  const isApproved = useApprovalStatus(address.wurz, account, address.wurz);
+
+  const { sendApprove } = useApprove(address.wurz, address.wurz);
+
+  const handleApprove = async () => {
+    setIsLoading(true);
+    await sendApprove();
+    setIsLoading(false);
+  };
+
+  const handleMax = () => {
+    setWithdrawAmount(balanceNum);
+  };
+
+  const renderButton = () => {
+    if (isApproved) {
+      return (
+        <Button onClick={handleWithdraw} isLoading={isLoading}>
+          Withdraw
+        </Button>
+      );
+    } else {
+      return (
+        <Button onClick={handleApprove} isLoading={isLoading}>
+          Approve WURZ
+        </Button>
+      );
+    }
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay />
       <ModalContent>
         <ModalHeader>
           <HStack>
-            <Image src="/tokens/urz.png" boxSize="30" />
+            <Image src="/tokens/urz.png" boxSize="30" alt="urz logo" />
             <Text>Withdraw URZ</Text>
           </HStack>
         </ModalHeader>
@@ -34,22 +88,35 @@ export const WithdrawModal = ({ isOpen, onClose }: any) => {
           <Flex flexDir="column" my="6">
             <InputGroup>
               <InputLeftElement>
-                <Image src="/tokens/urz.png" boxSize="20px" />
+                <Image src="/tokens/urz.png" boxSize="20px" alt="urz logo" />
               </InputLeftElement>
-              <Input placeholder="0.00" type="number" variant="filled" />
+              <Input
+                placeholder="Enter withdraw amount"
+                type="number"
+                variant="filled"
+                value={withdrawAmount}
+                onChange={(e) => setWithdrawAmount(e.target.value)}
+              />
               <InputRightElement>
-                <Text as="button" pr="3" fontSize="sm" textDecor="underline">
+                <Text
+                  as="button"
+                  pr="3"
+                  fontSize="sm"
+                  textDecor="underline"
+                  onClick={handleMax}
+                >
                   Max
                 </Text>
               </InputRightElement>
             </InputGroup>
             <HStack my="6">
-              <Image src="/tokens/urz.png" boxSize="20px" />
+              <Image src="/tokens/urz.png" boxSize="20px" alt="urz logo" />
               <Text variant="helper">Available URZ</Text>
               <Spacer />
-              <Text fontWeight="bold">0 URZ</Text>
+              <Text fontWeight="bold">{balance} URZ</Text>
             </HStack>
-            <Button>Withdraw</Button>
+
+            {renderButton()}
           </Flex>
         </ModalBody>
       </ModalContent>

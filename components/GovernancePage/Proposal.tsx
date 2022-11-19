@@ -1,25 +1,39 @@
-import { Badge, Flex, HStack, Spacer, Text } from "@chakra-ui/react";
+import {
+  Badge,
+  Flex,
+  HStack,
+  Spacer,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 
-import { IProposal } from "@constants/mockProposals";
+import { IProposalDetails } from "@constants/IProposalDetails";
 import { formatDate } from "@utils/formatDate";
+import { format } from "date-fns";
 import { useRouter } from "next/router";
 
 type proposalProps = {
-  proposal: IProposal;
+  proposal: IProposalDetails;
 };
 
 export const Proposal = ({ proposal }: proposalProps) => {
   const router = useRouter();
+
+  const { colorMode } = useColorMode();
 
   return (
     <Flex
       flexDir="column"
       width="100%"
       borderTop="1px"
-      py="3"
+      p="6"
       borderColor="gray.300"
       cursor="pointer"
-      onClick={() => router.push(`/governance/${proposal.id}`)}
+      onClick={() => router.push(`/governance/${proposal?.id}`)}
+      _hover={{
+        bgColor: colorMode === "light" ? "gray.50" : "gray.800",
+        cursor: "pointer",
+      }}
     >
       <HStack>
         <Text fontWeight="semibold" fontSize="sm">
@@ -32,7 +46,7 @@ export const Proposal = ({ proposal }: proposalProps) => {
       <HStack>
         <Badge colorScheme="green">{proposal.state}</Badge>
         <Spacer />
-        <Text variant="helper">Ends at: {formatDate(proposal.endDate)}</Text>
+        <Text variant="helper">Ends at: {formatDate(proposal?.endDate)}</Text>
       </HStack>
     </Flex>
   );
