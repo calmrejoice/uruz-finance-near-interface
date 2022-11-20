@@ -33,7 +33,7 @@ export const ToastTransactionStatus = (
       id: "Exception",
       title: "Error, transaction rejected.",
       description: description?.exceptionDesc,
-      variant: "left-accent",
+      // variant: "left-accent",
       status: "error",
     });
   }
@@ -46,7 +46,7 @@ export const ToastTransactionStatus = (
       id: "PendingSignature",
       title: "Pending confirmation in wallet...",
       description: description?.pendingSignatureDesc,
-      variant: "left-accent",
+      // variant: "left-accent",
       status: "info",
     });
   }
@@ -56,7 +56,7 @@ export const ToastTransactionStatus = (
       id: "Mining",
       title: "Transaction sent, please wait for it to be mined.",
       description: linkButton(state?.transaction?.hash),
-      variant: "left-accent",
+      // variant: "left-accent",
       status: "info",
     });
   }
@@ -66,7 +66,7 @@ export const ToastTransactionStatus = (
       id: "Success",
       title: "Transaction successful!",
       description: linkButton(state?.transaction?.hash),
-      variant: "left-accent",
+      // variant: "left-accent",
       status: "success",
     });
   }
@@ -76,7 +76,7 @@ export const ToastTransactionStatus = (
       id: "Fail",
       title: "Transaction unsuccessful! Please try again.",
       description: description?.failDesc,
-      variant: "left-accent",
+      // variant: "left-accent",
       status: "error",
     });
   }
