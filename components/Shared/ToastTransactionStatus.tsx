@@ -1,4 +1,9 @@
-import { Button, createStandaloneToast, useToast } from "@chakra-ui/react";
+import {
+  Button,
+  createStandaloneToast,
+  useColorMode,
+  useToast,
+} from "@chakra-ui/react";
 import { TransactionStatus } from "@usedapp/core";
 
 import theme from "@styles/theme";
@@ -23,6 +28,7 @@ export const ToastTransactionStatus = (
       variant="link"
       href={`https://testnet.aurorascan.dev/tx/${hash}`}
       target="_blank"
+      color="gray.600"
     >
       View on Aurora Scan
     </Button>
