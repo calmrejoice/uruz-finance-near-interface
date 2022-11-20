@@ -46,7 +46,7 @@ import { formatBalance, formatDisplayBalance } from "@utils/formatBalance";
 import { delegatorAbi } from "@deployments/index";
 import { BigNumber } from "ethers";
 import { useApprovalStatus, useApprove } from "@hooks/useApprove";
-import { useSupply } from "@hooks/useSupply";
+import { useSupplied, useSupply } from "@hooks/useSupply";
 import { config } from "@constants/config";
 import { useBalance, useUTokenBalance } from "@hooks/useBalance";
 import { useWithdraw } from "@hooks/useWithdraw";
@@ -161,6 +161,8 @@ export const SupplyModal = ({
     setWithdrawAmount(utokenBalanceNum?.toString());
   };
 
+  const { suppliedDisplay } = useSupplied(market?.utokenAddress, account);
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <ModalOverlay />
@@ -181,7 +183,7 @@ export const SupplyModal = ({
             <Text variant="helper">Supplied</Text>
             <Spacer />
 
-            <Text>{marketDetails?.totalSupply}</Text>
+            <Text>{suppliedDisplay}</Text>
             <Text>{market?.collateralSymbol}</Text>
           </HStack>
 
