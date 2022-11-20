@@ -1,34 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Uruz Finance
 
-## Getting Started
+## Overview
 
-First, run the development server:
+Uruz is a decentralized, non-custodial, pool-based interest rates platform that enables users to supply assets to earn interest, and to borrow against them to unlock liquidity.
 
-```bash
-npm run dev
-# or
-yarn dev
-```
+- [Uruz](https://uruz-finance-near-landing.vercel.app/)
+- [Demo Video](https://vimeo.com/772988002)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Contract Addresses
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+Here are the deployed contract addresses:
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Comptroller [0x942DafED7AC98becC7678a911610D04f0a43dD7e](https://testnet.aurorascan.dev/address/0x942DafED7AC98becC7678a911610D04f0a43dD7e)
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+Unitroller [0xF2e97e474db0341f234bf4E2530a070CE3ebf57c](https://testnet.aurorascan.dev/address/0xF2e97e474db0341f234bf4E2530a070CE3ebf57c)
 
-## Learn More
+jumpRate ETH JumpRateModelV2 [0x9d3839EF57C38F41EF0895A13F2C0A9b03661A4E](https://testnet.aurorascan.dev/address/0x9d3839ef57c38f41ef0895a13f2c0a9b03661a4e)
 
-To learn more about Next.js, take a look at the following resources:
+ETH CEther [0x5214FabaF182583Fd5255AD0d342fAcf0310d422](https://testnet.aurorascan.dev/address/0x5214FabaF182583Fd5255AD0d342fAcf0310d422)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+URZ [0x71431Ea524904AE6824E5cB2D8A950C5713660A9](https://testnet.aurorascan.dev/address/0x71431Ea524904AE6824E5cB2D8A950C5713660A9)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+WURZ [0x659c456066734aC9b0da7632f43E005C5bb79Dda](https://testnet.aurorascan.dev/address/0x659c456066734aC9b0da7632f43E005C5bb79Dda)
 
-## Deploy on Vercel
+URZ CErc20Delegate [0x7b5394DCa2A5442041e71B968507DA240454BFF3](https://testnet.aurorascan.dev/address/0x7b5394DCa2A5442041e71B968507DA240454BFF3)
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+URZ CErc20Delegator [0xb2519B737388d8F81336629986255C4cffe6cac9](https://testnet.aurorascan.dev/address/0xb2519B737388d8F81336629986255C4cffe6cac9)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+NEAR CErc20Delegate [0x4364e0B7F6110baEB0D436218688F07A82765Fc0](https://testnet.aurorascan.dev/address/0x4364e0B7F6110baEB0D436218688F07A82765Fc0)
+
+NEAR CErc20Delegator [0x8422A5442DccD4E330Ff92b70E365eE2E2B22078](https://testnet.aurorascan.dev/address/0x8422A5442DccD4E330Ff92b70E365eE2E2B22078)
+
+PriceOracle [0xC2F202B044Da3997451b91c51fc1aE3d9E02FAF6](https://testnet.aurorascan.dev/address/0xC2F202B044Da3997451b91c51fc1aE3d9E02FAF6)
+
+PriceOracleProxy [0xdb4D2e78227f2d37D5731f43eFAedEBD734c4641](https://testnet.aurorascan.dev/address/0xdb4D2e78227f2d37D5731f43eFAedEBD734c4641)
+
+GovernorAlpha [0x2835538927f0a6b72dE40B3005c58B821f36C28d](https://testnet.aurorascan.dev/address/0x2835538927f0a6b72dE40B3005c58B821f36C28d)
+
+Timelock [0xaf7Af925Ae728C50d8c3A6ec300d1067826eBEEb](https://testnet.aurorascan.dev/address/0xaf7Af925Ae728C50d8c3A6ec300d1067826eBEEb)
+
+## Screenshots
+
+**Landing Page**
+![Landing Page](./assets/landing.png)
+
+**Markets**
+![Markets](./assets/markets.png)
+
+**Market Details**
+![Market Details](./assets/marketdetails.png)
+
+**Supply**
+![Supply](./assets/supply.png)
+
+**Portfolio**
+![Portfolio](./assets/portfolio.png)
+
+**Governance**
+![Governance](./assets/governance.png)
+
+**Stake**
+![Stake](./assets/stake.png)
